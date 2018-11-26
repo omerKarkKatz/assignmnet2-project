@@ -8,6 +8,7 @@ public class FutureTest {
 
     @Before
     public void setUp() throws Exception {
+        System.out.println("hello");
     }
 
     @Test
