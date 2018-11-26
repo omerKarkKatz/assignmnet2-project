@@ -1,4 +1,4 @@
-
+import bgu.spl.mics.Future;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -6,13 +6,19 @@ import static org.junit.Assert.*;
 
 public class FutureTest {
 
+    private Future<Object> future;
+    private Object o;
+
     @Before
     public void setUp() throws Exception {
-        System.out.println("hello");
+        future = new Future();
+        o = new Object();
     }
 
     @Test
     public void get() {
+        future.get();
+
     }
 
     @Test
