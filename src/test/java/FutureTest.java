@@ -18,7 +18,7 @@ public class FutureTest {
     @Test
     public void get() {
         future.get();
-
+        System.out.println("hello");
     }
 
     @Test
