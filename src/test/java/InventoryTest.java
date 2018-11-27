@@ -16,7 +16,7 @@ public class InventoryTest {
     @Before
     public void setUp() throws Exception {
         for (int i = 0; i < books.length; i++) {
-            books[i] = new BookInventoryInfo("book ",i%5,i*8);
+            books[i] = new BookInventoryInfo("book ",i%6,i*8);
         }
     }
 
