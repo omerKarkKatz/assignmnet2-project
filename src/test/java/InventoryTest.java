@@ -1,6 +1,7 @@
 
 import bgu.spl.mics.application.passiveObjects.BookInventoryInfo;
 import bgu.spl.mics.application.passiveObjects.Inventory;
+import bgu.spl.mics.application.passiveObjects.OrderResult;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,7 +33,7 @@ public class InventoryTest {
         }
         inventory.load(books);
         for (int i=0; i<books.length; i++) {
-            assertEquals("book wasn't loaded",books[i].getBookTitle(),inventory.take(books[i].getBookTitle()));
+            assertEquals("book wasn't loaded",OrderResult.valueOf(books[i].getBookTitle()),inventory.take(books[i].getBookTitle()));
         }
     }
 
@@ -41,7 +42,7 @@ public class InventoryTest {
         inventory.load(books);
         for (int i = 0; i < books.length; i++) {
             String bookName = books[i].getBookTitle();
-            assertEquals("book wasn't loaded",books[i].getBookTitle(),inventory.take(bookName));
+            assertEquals("book wasn't loaded", OrderResult.valueOf(bookName),(inventory.take(bookName).name()));
         }
 
     }
