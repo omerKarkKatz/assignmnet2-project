@@ -40,7 +40,8 @@ public class InventoryTest {
     public void take() {
         inventory.load(books);
         for (int i = 0; i < books.length; i++) {
-            assertEquals("book wasn't loaded",books[i].getBookTitle(),inventory.take(books[i].getBookTitle()));
+            String bookName = books[i].getBookTitle();
+            assertEquals("book wasn't loaded",books[i].getBookTitle(),inventory.take(bookName));
         }
 
     }
