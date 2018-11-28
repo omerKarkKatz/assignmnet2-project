@@ -71,8 +71,8 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void register(MicroService m) {
-		// TODO Auto-generated method stub
-
+		if (!QueueOfMicroTasks.contains(m))
+		QueueOfMicroTasks.put(m, new LinkedBlockingQueue<>());
 	}
 
 	@Override
