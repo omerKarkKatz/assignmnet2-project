@@ -1,5 +1,4 @@
 package bgu.spl.mics;
-
 import java.util.HashMap;
 import java.util.Queue;
 import java.util.Vector;
@@ -30,13 +29,24 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
-		// TODO Auto-generated method stub
-
+		if (eventsSubscribers.contains(type)) {
+			eventsSubscribers.get(type).add(m);
+		}//check if event is already in hashmap
+		else {
+			eventsSubscribers.put(type, new LinkedBlockingQueue<>());
+			eventsSubscribers.get(type).add(m);
+		}
 	}
 
 	@Override
 	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
-		// TODO Auto-generated method stub
+		if (broadcastSubscribers.contains(type)){
+			broadcastSubscribers.get(type).add(m);
+		}
+		else {
+			broadcastSubscribers.put(type, new Vector<>());
+			broadcastSubscribers.get(type).add(m);
+		}
 
 	}
 
