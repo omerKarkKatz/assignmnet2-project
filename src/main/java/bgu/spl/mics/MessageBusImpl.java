@@ -12,20 +12,25 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class MessageBusImpl implements MessageBus {
 
-    private static MessageBusImpl MessegeBusInstance = null;
-	private ConcurrentHashMap< MicroService ,Queue<Message>> QueueOfMicroTasks;
-	private ConcurrentHashMap<Class<? extends Event>, LinkedBlockingQueue<MicroService>>eventsSubscribers;
-	private ConcurrentHashMap<Class <? extends Broadcast>, Vector<MicroService>>broadcastSubscribers;
+	private static class SingletonHolder {
+		private static MessageBusImpl MessegeBusInstance = new MessageBusImpl();
+	}
 
+	private ConcurrentHashMap<MicroService, Queue<Message>> QueueOfMicroTasks;
+	private ConcurrentHashMap<Class<? extends Event>, LinkedBlockingQueue<MicroService>> eventsSubscribers;
+	private ConcurrentHashMap<Class<? extends Broadcast>, Vector<MicroService>> broadcastSubscribers;
+	private ConcurrentHashMap<Event, Future> EventToFuture;
 
 	private MessageBusImpl(){
 	    QueueOfMicroTasks = new ConcurrentHashMap<>();
 	    eventsSubscribers = new ConcurrentHashMap<>();
 	    broadcastSubscribers = new ConcurrentHashMap<>();
+	    EventToFuture = new ConcurrentHashMap<>();
     }
 
-
-
+	public static MessageBus getInstance() {
+		return SingletonHolder.MessegeBusInstance;
+	}
 
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
