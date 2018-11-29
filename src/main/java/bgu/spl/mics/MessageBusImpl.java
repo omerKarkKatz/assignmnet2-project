@@ -1,5 +1,6 @@
 package bgu.spl.mics;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Queue;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
@@ -63,14 +64,26 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void sendBroadcast(Broadcast b) {
-		// TODO Auto-generated method stub
-
+		// check if this syntax is ok//
+		Iterator<MicroService> iter = broadcastSubscribers.get(b).iterator();
+		while (iter.hasNext()){
+			QueueOfMicroTasks.get(iter).add(b);
+			iter.next();
+		}
 	}
 
 	
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) {
-		// TODO Auto-generated method stub
+
+		MicroService m = null;
+		synchronized (eventsSubscribers.get(e)) {
+			try {
+				m = eventsSubscribers.get(e).take();
+				eventsSubscribers.get(e).add(m);
+			} catch (InterruptedException e1) {}
+		}
+		QueueOfMicroTasks.get(m).add(e);
 		return null;
 	}
 
