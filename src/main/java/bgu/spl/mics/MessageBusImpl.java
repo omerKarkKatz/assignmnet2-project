@@ -3,6 +3,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.Vector;
+import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -17,7 +18,7 @@ public class MessageBusImpl implements MessageBus {
 		private static MessageBusImpl MessegeBusInstance = new MessageBusImpl();
 	}
 
-	private ConcurrentHashMap<MicroService, Queue<Message>> QueueOfMicroTasks;
+	private ConcurrentHashMap<MicroService, LinkedBlockingQueue<Message>> QueueOfMicroTasks;
 	private ConcurrentHashMap<Class<? extends Event>, LinkedBlockingQueue<MicroService>> eventsSubscribers;
 	private ConcurrentHashMap<Class<? extends Broadcast>, Vector<MicroService>> broadcastSubscribers;
 	private ConcurrentHashMap<Event, Future> EventToFuture;
@@ -35,24 +36,23 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
-		if (eventsSubscribers.contains(type)) {
-			eventsSubscribers.get(type).add(m);
-		}//check if event is already in hashmap
-		else {
-			eventsSubscribers.put(type, new LinkedBlockingQueue<>());
-			eventsSubscribers.get(type).add(m);
-		}
+		eventsSubscribers.putIfAbsent(type, new LinkedBlockingQueue<>());
+		eventsSubscribers.get(type).add(m);
 	}
 
 	@Override
 	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
-		if (broadcastSubscribers.contains(type)){
+
+		broadcastSubscribers.putIfAbsent(type, new Vector<>());
+		//check if this method should be synchonized
+		broadcastSubscribers.get(type).add(m);
+		/*if (broadcastSubscribers.contains(type)){
 			broadcastSubscribers.get(type).add(m);
 		}
 		else {
 			broadcastSubscribers.put(type, new Vector<>());
 			broadcastSubscribers.get(type).add(m);
-		}
+		}*/
 
 	}
 
@@ -89,8 +89,7 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void register(MicroService m) {
-		if (!QueueOfMicroTasks.contains(m))
-		QueueOfMicroTasks.put(m, new LinkedBlockingQueue<>());
+		QueueOfMicroTasks.putIfAbsent(m, new LinkedBlockingQueue<Message>());
 	}
 
 	@Override
