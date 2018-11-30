@@ -7,12 +7,17 @@ import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import java.util.HashMap;
+import java.util.Queue;
+
 /**
  * The {@link MessageBusImpl class is the implementation of the MessageBus interface.
  * Write your implementation here!
  * Only private fields and methods can be added to this class.
  */
 public class MessageBusImpl implements MessageBus {
+	private HashMap<Integer, Queue<MicroService>> MicroServices;
+	private Object lock1;
 
 	private static class SingletonHolder {
 		private static MessageBusImpl MessegeBusInstance = new MessageBusImpl();
@@ -46,19 +51,16 @@ public class MessageBusImpl implements MessageBus {
 		broadcastSubscribers.putIfAbsent(type, new Vector<>());
 		//check if this method should be synchonized
 		broadcastSubscribers.get(type).add(m);
-		/*if (broadcastSubscribers.contains(type)){
-			broadcastSubscribers.get(type).add(m);
-		}
-		else {
-			broadcastSubscribers.put(type, new Vector<>());
-			broadcastSubscribers.get(type).add(m);
-		}*/
+
 
 	}
 
 	@Override
 	public <T> void complete(Event<T> e, T result) {
-		// TODO Auto-generated method stub
+		// find the futere object related to event e, resolve the future obj(future method)
+		EventToFuture.get(e).resolve(result);
+		// check if to delete the event from the hash or you need it fot log.
+
 
 	}
 
@@ -67,24 +69,29 @@ public class MessageBusImpl implements MessageBus {
 		// check if this syntax is ok//
 		Iterator<MicroService> iter = broadcastSubscribers.get(b).iterator();
 		while (iter.hasNext()){
-			QueueOfMicroTasks.get(iter).add(b);
-			iter.next();
+			QueueOfMicroTasks.get(iter.next()).add(b);
+
 		}
 	}
 
 	
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) {
-
+		Future<T> futureEvent = new Future<T>();
+		EventToFuture.putIfAbsent(e, futureEvent);
 		MicroService m = null;
 		synchronized (eventsSubscribers.get(e)) {
-			try {
-				m = eventsSubscribers.get(e).take();
+			m = eventsSubscribers.get(e).poll();
+			// checkes if there is a micro service that can handle this.
+			if( m != null)
+				return null;
+			// moves the micro to the end of the queue (round robin manner), adds message to the microMessageQueue.
+			else {
 				eventsSubscribers.get(e).add(m);
-			} catch (InterruptedException e1) {}
+				QueueOfMicroTasks.get(m).add(e);
+			}
+			return futureEvent;
 		}
-		QueueOfMicroTasks.get(m).add(e);
-		return null;
 	}
 
 	@Override
@@ -100,8 +107,10 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException {
-		// TODO Auto-generated method stub
-		return null;
+			if (!QueueOfMicroTasks.contains(m))
+				throw new IllegalStateException();
+			else
+				return QueueOfMicroTasks.get(m).take();
 	}
 
 	

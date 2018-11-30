@@ -1,6 +1,7 @@
 package bgu.spl.mics;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A Future object represents a promised result - an object that will
@@ -15,8 +16,12 @@ public class Future<T> {
 	/**
 	 * This should be the the only public constructor in this class.
 	 */
+	private AtomicReference<T> result;
+	private boolean resolved;
+
 	public Future() {
-		//TODO: implement this
+		result = null;
+		resolved = false;
 	}
 	
 	/**
@@ -27,24 +32,34 @@ public class Future<T> {
      * @return return the result of type T if it is available, if not wait until it is available.
      * 	       
      */
+
+	// to check what will happen if the result would stay null all the time.
 	public T get() {
-		//TODO: implement this.
-		return null;
+		while (!isDone()) {
+			try {
+				this.wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		return result.get();
 	}
-	
-	/**
+		/**
      * Resolves the result of this Future object.
      */
 	public void resolve (T result) {
-		//TODO: implement this.
+
+		this.result.set(result);
+		resolved = true;
+		// notify All to wake all the threads waiting for result
+		notifyAll();
 	}
 	
 	/**
      * @return true if this object has been resolved, false otherwise
      */
 	public boolean isDone() {
-		//TODO: implement this.
-		return false;
+		return resolved;
 	}
 	
 	/**
@@ -58,9 +73,17 @@ public class Future<T> {
      * 	       wait for {@code timeout} TimeUnits {@code unit}. If time has
      *         elapsed, return null.
      */
+
 	public T get(long timeout, TimeUnit unit) {
-		//TODO: implement this.
-		return null;
+		// adds the time we are able to wail to the curr time
+		long timeToFinish = System.currentTimeMillis() + unit.toMillis(timeout);
+		while(!isDone())
+		{
+			// reduces the cuur time from the time we are sposer to wait+ curr time
+			if (timeToFinish - System.currentTimeMillis() <=0)
+				return null;
+		}
+		return result.get();
 	}
 
 }
