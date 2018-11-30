@@ -3,7 +3,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.Vector;
-import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -27,12 +26,14 @@ public class MessageBusImpl implements MessageBus {
 	private ConcurrentHashMap<Class<? extends Event>, LinkedBlockingQueue<MicroService>> eventsSubscribers;
 	private ConcurrentHashMap<Class<? extends Broadcast>, Vector<MicroService>> broadcastSubscribers;
 	private ConcurrentHashMap<Event, Future> EventToFuture;
+	private ConcurrentHashMap<MicroService, Vector<Class<? extends Message>>> messagesOfMicroService;
 
 	private MessageBusImpl(){
 	    QueueOfMicroTasks = new ConcurrentHashMap<>();
 	    eventsSubscribers = new ConcurrentHashMap<>();
 	    broadcastSubscribers = new ConcurrentHashMap<>();
 	    EventToFuture = new ConcurrentHashMap<>();
+		messagesOfMicroService = new ConcurrentHashMap<>();
     }
 
 	public static MessageBus getInstance() {
@@ -41,18 +42,20 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
+		messagesOfMicroService.putIfAbsent(m, new Vector<>());
+		messagesOfMicroService.get(m).add(type);
 		eventsSubscribers.putIfAbsent(type, new LinkedBlockingQueue<>());
 		eventsSubscribers.get(type).add(m);
 	}
 
 	@Override
 	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
+		messagesOfMicroService.putIfAbsent(m, new Vector<>());
+		messagesOfMicroService.get(m).add(type);
 
-		broadcastSubscribers.putIfAbsent(type, new Vector<>());
 		//check if this method should be synchonized
+		broadcastSubscribers.putIfAbsent(type, new Vector<>());
 		broadcastSubscribers.get(type).add(m);
-
-
 	}
 
 	@Override
@@ -60,8 +63,6 @@ public class MessageBusImpl implements MessageBus {
 		// find the futere object related to event e, resolve the future obj(future method)
 		EventToFuture.get(e).resolve(result);
 		// check if to delete the event from the hash or you need it fot log.
-
-
 	}
 
 	@Override
@@ -70,7 +71,6 @@ public class MessageBusImpl implements MessageBus {
 		Iterator<MicroService> iter = broadcastSubscribers.get(b).iterator();
 		while (iter.hasNext()){
 			QueueOfMicroTasks.get(iter.next()).add(b);
-
 		}
 	}
 
@@ -99,10 +99,21 @@ public class MessageBusImpl implements MessageBus {
 		QueueOfMicroTasks.putIfAbsent(m, new LinkedBlockingQueue<Message>());
 	}
 
+
 	@Override
 	public void unregister(MicroService m) {
-		// TODO Auto-generated method stub
-
+		// check if clear is sync.
+		QueueOfMicroTasks.get(m).clear();
+		QueueOfMicroTasks.remove(m);
+		Iterator<Class<? extends Message>> iter = messagesOfMicroService.get(m).iterator();
+		while(iter.hasNext()) {
+			Class<? extends Message> message = iter.next();
+			if (message.getClass().equals(Event.class))
+				eventsSubscribers.get(message).remove(m);
+			else
+				broadcastSubscribers.get(message).remove(m);
+		}
+		m.terminate();
 	}
 
 	@Override
@@ -112,7 +123,4 @@ public class MessageBusImpl implements MessageBus {
 			else
 				return QueueOfMicroTasks.get(m).take();
 	}
-
-	
-
 }
