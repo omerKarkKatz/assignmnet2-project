@@ -15,12 +15,10 @@ import java.util.Queue;
  * Only private fields and methods can be added to this class.
  */
 public class MessageBusImpl implements MessageBus {
-	private HashMap<Integer, Queue<MicroService>> MicroServices;
-	private Object lock1;
-
 	private static class SingletonHolder {
 		private static MessageBusImpl MessegeBusInstance = new MessageBusImpl();
 	}
+
 
 	private ConcurrentHashMap<MicroService, LinkedBlockingQueue<Message>> QueueOfMicroTasks;
 	private ConcurrentHashMap<Class<? extends Event>, LinkedBlockingQueue<MicroService>> eventsSubscribers;
@@ -67,7 +65,6 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void sendBroadcast(Broadcast b) {
-		// check if this syntax is ok//
 		Iterator<MicroService> iter = broadcastSubscribers.get(b).iterator();
 		while (iter.hasNext()){
 			QueueOfMicroTasks.get(iter.next()).add(b);
