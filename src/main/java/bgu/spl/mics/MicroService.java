@@ -32,6 +32,7 @@ public abstract class MicroService implements Runnable {
      */
     public MicroService(String name) {
         this.name = name;
+        this.messageToCallback = new ConcurrentHashMap<>();
     }
 
     /**
@@ -82,8 +83,8 @@ public abstract class MicroService implements Runnable {
      *                 queue.
      */
     protected final <B extends Broadcast> void subscribeBroadcast(Class<B> type, Callback<B> callback) {
-        messageToCallback.putIfAbsent(type, callback);
         MessageBusImpl.getInstance().subscribeBroadcast(type, this);
+        messageToCallback.putIfAbsent(type, callback);
     }
 
     /**
@@ -159,12 +160,10 @@ public abstract class MicroService implements Runnable {
             try {
                 m = MessageBusImpl.getInstance().awaitMessage(this);
                 messageToCallback.get(m.getClass()).call(m);
-            } catch (Exception e){
-                   System.out.println("No Micro Service has registered to handle ExampleEvent events! The event cannot be processed");
-                   terminate();
-            }
+            } catch (Exception table){}
 
         }
+
     }
 
 }

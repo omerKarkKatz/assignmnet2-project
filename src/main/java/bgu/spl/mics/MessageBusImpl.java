@@ -28,6 +28,7 @@ public class MessageBusImpl implements MessageBus {
 	    broadcastSubscribers = new ConcurrentHashMap<>();
 	    EventToFuture = new ConcurrentHashMap<>();
 		messagesOfMicroToDelete = new ConcurrentHashMap<>();
+		lockSendTask = new Object();
     }
 
 	public static MessageBus getInstance() {
@@ -37,39 +38,42 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
 		// check if to sync these 2 lines.
-		if(QueueOfMicroTasks.contains(m)) {
+		if(!QueueOfMicroTasks.contains(m))
+		    register(m);
 			messagesOfMicroToDelete.putIfAbsent(m, new Vector<>());
 			messagesOfMicroToDelete.get(m).add(type);
 
 			eventsSubscribers.putIfAbsent(type, new LinkedBlockingQueue<>());
 			eventsSubscribers.get(type).add(m);
-		}
+
 	}
 
 	@Override
 	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
-		if(QueueOfMicroTasks.contains(m)) {
+		if(!QueueOfMicroTasks.contains(m))
+		    register(m);
 			messagesOfMicroToDelete.putIfAbsent(m, new Vector<>());
 			messagesOfMicroToDelete.get(m).add(type);
 
-			//check if this method should be synchonized
+			//check if this method should be synchronized
 			broadcastSubscribers.putIfAbsent(type, new Vector<>());
 			broadcastSubscribers.get(type).add(m);
-		}
+
 	}
 
 	@Override
 	public <T> void complete(Event<T> e, T result) {
-		// find the futere object related to event e, resolve the future obj(future method)
+		// find the future object related to event e, resolve the future obj(future method)
 		EventToFuture.get(e).resolve(result);
-		// check if to delete the event from the hash or you need it fot log.
+		// checks if to delete the event from the hash or we need it for log.
 	}
 
 	@Override
 	public void sendBroadcast(Broadcast b) {
-		Iterator<MicroService> iter = broadcastSubscribers.get(b).iterator();
+		Iterator<MicroService> iter = broadcastSubscribers.get(b.getClass()).iterator();
+
 		while (iter.hasNext()){
-			synchronized (lockSendTask) {
+            synchronized(lockSendTask){
 				QueueOfMicroTasks.get(iter.next()).add(b);
 			}
 		}
@@ -84,7 +88,7 @@ public class MessageBusImpl implements MessageBus {
 		if(eventsSubscribers.contains(e)) {
 			synchronized (eventsSubscribers.get(e)) {
 				m = eventsSubscribers.get(e).poll();
-				// checkes if there is a micro service that can handle this.
+				// checks if there is a micro service which can handle this.
 				if (m != null)
 					return null;
 					// moves the micro to the end of the queue (round robin manner), adds message to the microMessageQueue.
@@ -96,6 +100,9 @@ public class MessageBusImpl implements MessageBus {
 				}
 			}
 		}
+		else{// meaning there is no eventType equals to e
+		    futureEvent = null;
+        }
 			return futureEvent;
 	}
 
@@ -122,7 +129,7 @@ public class MessageBusImpl implements MessageBus {
 	}
 
 	@Override
-	public Message awaitMessage(MicroService m) throws InterruptedException {
+	public Message awaitMessage(MicroService m) throws InterruptedException, IllegalStateException {
 			if (!QueueOfMicroTasks.contains(m))
 				throw new IllegalStateException();
 			else
