@@ -20,6 +20,7 @@ public class MessageBusImpl implements MessageBus {
 	private ConcurrentHashMap<Class<? extends Broadcast>, Vector<MicroService>> broadcastSubscribers;
 	private ConcurrentHashMap<Event, Future> EventToFuture;
 	private ConcurrentHashMap<MicroService, Vector<Class<? extends Message>>> messagesOfMicroToDelete;
+	private Object lockSendTask;
 
 	private MessageBusImpl(){
 	    QueueOfMicroTasks = new ConcurrentHashMap<>();
@@ -68,7 +69,9 @@ public class MessageBusImpl implements MessageBus {
 	public void sendBroadcast(Broadcast b) {
 		Iterator<MicroService> iter = broadcastSubscribers.get(b).iterator();
 		while (iter.hasNext()){
-			QueueOfMicroTasks.get(iter.next()).add(b);
+			synchronized (lockSendTask) {
+				QueueOfMicroTasks.get(iter.next()).add(b);
+			}
 		}
 	}
 
@@ -78,18 +81,22 @@ public class MessageBusImpl implements MessageBus {
 		Future<T> futureEvent = new Future<T>();
 		EventToFuture.putIfAbsent(e, futureEvent);
 		MicroService m = null;
-		synchronized (eventsSubscribers.get(e)) {
-			m = eventsSubscribers.get(e).poll();
-			// checkes if there is a micro service that can handle this.
-			if( m != null)
-				return null;
-			// moves the micro to the end of the queue (round robin manner), adds message to the microMessageQueue.
-			else {
-				eventsSubscribers.get(e).add(m);
-				QueueOfMicroTasks.get(m).add(e);
+		if(eventsSubscribers.contains(e)) {
+			synchronized (eventsSubscribers.get(e)) {
+				m = eventsSubscribers.get(e).poll();
+				// checkes if there is a micro service that can handle this.
+				if (m != null)
+					return null;
+					// moves the micro to the end of the queue (round robin manner), adds message to the microMessageQueue.
+				else {
+					eventsSubscribers.get(e).add(m);
+					synchronized (lockSendTask) {
+						QueueOfMicroTasks.get(m).add(e);
+					}
+				}
 			}
-			return futureEvent;
 		}
+			return futureEvent;
 	}
 
 	@Override

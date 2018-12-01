@@ -159,10 +159,11 @@ public abstract class MicroService implements Runnable {
             try {
                 m = MessageBusImpl.getInstance().awaitMessage(this);
                 messageToCallback.get(m.getClass()).call(m);
-
-            } catch (InterruptedException e) {
-                System.out.println("there is no micro service that can handle this event");
+            } catch (Exception e){
+                   System.out.println("No Micro Service has registered to handle ExampleEvent events! The event cannot be processed");
+                   terminate();
             }
+
         }
     }
 
