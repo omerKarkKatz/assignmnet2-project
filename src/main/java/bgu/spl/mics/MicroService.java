@@ -24,7 +24,7 @@ public abstract class MicroService implements Runnable {
 
     private boolean terminated = false;
     private final String name;
-    private ConcurrentHashMap< Class<? extends Message>, Callback> microToCallback;
+    private ConcurrentHashMap< Class<? extends Message>, Callback> messageToCallback;
 
     /**
      * @param name the micro-service name (used mainly for debugging purposes -
@@ -56,7 +56,7 @@ public abstract class MicroService implements Runnable {
      *                 queue.
      */
     protected final <T, E extends Event<T>> void subscribeEvent(Class<E> type, Callback<E> callback) {
-        microToCallback.putIfAbsent(type, callback);
+        messageToCallback.putIfAbsent(type, callback);
         MessageBusImpl.getInstance().subscribeEvent(type, this);
 
     }
@@ -82,7 +82,7 @@ public abstract class MicroService implements Runnable {
      *                 queue.
      */
     protected final <B extends Broadcast> void subscribeBroadcast(Class<B> type, Callback<B> callback) {
-        microToCallback.putIfAbsent(type, callback);
+        messageToCallback.putIfAbsent(type, callback);
         MessageBusImpl.getInstance().subscribeBroadcast(type, this);
     }
 
@@ -158,7 +158,8 @@ public abstract class MicroService implements Runnable {
         while (!terminated) {
             try {
                 m = MessageBusImpl.getInstance().awaitMessage(this);
-                microToCallback.get(m.getClass()).call(m);
+                messageToCallback.get(m.getClass()).call(m);
+
             } catch (InterruptedException e) {
                 System.out.println("there is no micro service that can handle this event");
             }

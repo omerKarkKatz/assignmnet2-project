@@ -79,7 +79,7 @@ public class Future<T> {
 		long timeToFinish = System.currentTimeMillis() + unit.toMillis(timeout);
 		while(!isDone())
 		{
-			// reduces the cuur time from the time we are sposer to wait+ curr time
+			// reduces the cuur time from the time we are supposed to wait+ curr time
 			if (timeToFinish - System.currentTimeMillis() <=0)
 				return null;
 		}

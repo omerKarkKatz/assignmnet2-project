@@ -10,23 +10,23 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Only private fields and methods can be added to this class.
  */
 public class MessageBusImpl implements MessageBus {
+
 	private static class SingletonHolder {
 		private static MessageBusImpl MessegeBusInstance = new MessageBusImpl();
 	}
-
 
 	private ConcurrentHashMap<MicroService, LinkedBlockingQueue<Message>> QueueOfMicroTasks;
 	private ConcurrentHashMap<Class<? extends Event>, LinkedBlockingQueue<MicroService>> eventsSubscribers;
 	private ConcurrentHashMap<Class<? extends Broadcast>, Vector<MicroService>> broadcastSubscribers;
 	private ConcurrentHashMap<Event, Future> EventToFuture;
-	private ConcurrentHashMap<MicroService, Vector<Class<? extends Message>>> messagesOfMicroService;
+	private ConcurrentHashMap<MicroService, Vector<Class<? extends Message>>> messagesOfMicroToDelete;
 
 	private MessageBusImpl(){
 	    QueueOfMicroTasks = new ConcurrentHashMap<>();
 	    eventsSubscribers = new ConcurrentHashMap<>();
 	    broadcastSubscribers = new ConcurrentHashMap<>();
 	    EventToFuture = new ConcurrentHashMap<>();
-		messagesOfMicroService = new ConcurrentHashMap<>();
+		messagesOfMicroToDelete = new ConcurrentHashMap<>();
     }
 
 	public static MessageBus getInstance() {
@@ -36,21 +36,25 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
 		// check if to sync these 2 lines.
-		messagesOfMicroService.putIfAbsent(m, new Vector<>());
-		messagesOfMicroService.get(m).add(type);
+		if(QueueOfMicroTasks.contains(m)) {
+			messagesOfMicroToDelete.putIfAbsent(m, new Vector<>());
+			messagesOfMicroToDelete.get(m).add(type);
 
-		eventsSubscribers.putIfAbsent(type, new LinkedBlockingQueue<>());
-		eventsSubscribers.get(type).add(m);
+			eventsSubscribers.putIfAbsent(type, new LinkedBlockingQueue<>());
+			eventsSubscribers.get(type).add(m);
+		}
 	}
 
 	@Override
 	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
-		messagesOfMicroService.putIfAbsent(m, new Vector<>());
-		messagesOfMicroService.get(m).add(type);
+		if(QueueOfMicroTasks.contains(m)) {
+			messagesOfMicroToDelete.putIfAbsent(m, new Vector<>());
+			messagesOfMicroToDelete.get(m).add(type);
 
-		//check if this method should be synchonized
-		broadcastSubscribers.putIfAbsent(type, new Vector<>());
-		broadcastSubscribers.get(type).add(m);
+			//check if this method should be synchonized
+			broadcastSubscribers.putIfAbsent(type, new Vector<>());
+			broadcastSubscribers.get(type).add(m);
+		}
 	}
 
 	@Override
@@ -99,7 +103,7 @@ public class MessageBusImpl implements MessageBus {
 		// check if clear is sync.
 		QueueOfMicroTasks.get(m).clear();
 		QueueOfMicroTasks.remove(m);
-		Iterator<Class<? extends Message>> iter = messagesOfMicroService.get(m).iterator();
+		Iterator<Class<? extends Message>> iter = messagesOfMicroToDelete.get(m).iterator();
 		while(iter.hasNext()) {
 			Class<? extends Message> message = iter.next();
 			if (message.getClass().equals(Event.class))
