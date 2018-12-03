@@ -135,7 +135,7 @@ public class MessageBusImpl implements MessageBus {
 				Iterator<Class<? extends Message>> iter = messagesOfMicroToDelete.get(m).iterator();
 				while (iter.hasNext()) {
 					Class<? extends Message> messageIter = iter.next();
-					if (messageIter.getClass().equals(Event.class))
+					if (messageIter.getClass().isInstance(Event.class))
 						eventsSubscribers.get(messageIter).remove(m);
 					else
 						broadcastSubscribers.get(messageIter).remove(m);
