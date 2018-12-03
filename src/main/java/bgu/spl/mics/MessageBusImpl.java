@@ -134,11 +134,11 @@ public class MessageBusImpl implements MessageBus {
 			try {
 				Iterator<Class<? extends Message>> iter = messagesOfMicroToDelete.get(m).iterator();
 				while (iter.hasNext()) {
-					Class<? extends Message> message = iter.next();
-					if (message.getClass().equals(Event.class))
-						eventsSubscribers.get(message).remove(m);
+					Class<? extends Message> messageIter = iter.next();
+					if (messageIter.getClass().equals(Event.class))
+						eventsSubscribers.get(messageIter).remove(m);
 					else
-						broadcastSubscribers.get(message).remove(m);
+						broadcastSubscribers.get(messageIter).remove(m);
 				}
 			}finally {
 				broadCastLock.writeLock().unlock();
