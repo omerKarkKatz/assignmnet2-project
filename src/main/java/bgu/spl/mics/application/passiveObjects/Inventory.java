@@ -1,6 +1,8 @@
 package bgu.spl.mics.application.passiveObjects;
 
 
+import java.util.HashMap;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -19,7 +21,7 @@ public class Inventory {
 
 	}
 
-	private ConcurrentHashMap <String,BookInventoryInfo> BookStock;
+	private ConcurrentHashMap <String,BookInventoryInfo> bookStock;
 	/**
      * Retrieves the single instance of this class.
      */
@@ -36,6 +38,9 @@ public class Inventory {
      * 						of the inventory.
      */
 	public void load (BookInventoryInfo[ ] inventory ) {
+        for (BookInventoryInfo book: inventory) {
+           bookStock.putIfAbsent(book.getBookTitle(), book);
+        }
 		
 	}
 	
@@ -48,8 +53,15 @@ public class Inventory {
      * 			second should reduce by one the number of books of the desired type.
      */
 	public OrderResult take (String book) {
-		
-		return null;
+		if (bookStock.containsKey(book)){
+		    if (bookStock.get(book).getAmountInInventory() > 0) {
+                bookStock.get(book).reduceAmount();
+                return OrderResult.SUCCESSFULLY_TAKEN;
+            }
+		    else
+		        return OrderResult.NOT_IN_STOCK;
+        }
+		return OrderResult.NOT_IN_STOCK;
 	}
 	
 	
@@ -61,7 +73,8 @@ public class Inventory {
      * @return the price of the book if it is available, -1 otherwise.
      */
 	public int checkAvailabiltyAndGetPrice(String book) {
-		//TODO: Implement this
+	    if (bookStock.containsKey(book) && bookStock.get(book).getAmountInInventory()>0)
+	        return bookStock.get(book).getPrice();
 		return -1;
 	}
 	
@@ -74,6 +87,10 @@ public class Inventory {
      * This method is called by the main method in order to generate the output.
      */
 	public void printInventoryToFile(String filename){
-		//TODO: Implement this
+        HashMap<String,Integer> Filename = new HashMap<>();
+		 Set<String> bookInStock = bookStock.keySet();
+             for (String bookName: bookInStock) {
+                 Filename.putIfAbsent(bookName,bookStock.get(bookName).getAmountInInventory());
+        }
 	}
 }
