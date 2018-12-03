@@ -1,6 +1,7 @@
 package bgu.spl.mics.application.passiveObjects;
 
 
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Passive data-object representing the store inventory.
@@ -13,13 +14,18 @@ package bgu.spl.mics.application.passiveObjects;
  * You can add ONLY private fields and methods to this class as you see fit.
  */
 public class Inventory {
+	private static class SingletonHolder {
+		private static Inventory inventoryInstance = new Inventory();
 
+	}
+
+	private ConcurrentHashMap <String,BookInventoryInfo> BookStock;
 	/**
      * Retrieves the single instance of this class.
      */
 	public static Inventory getInstance() {
 		//TODO: Implement this
-		return null;
+		return SingletonHolder.inventoryInstance;
 	}
 	
 	/**
