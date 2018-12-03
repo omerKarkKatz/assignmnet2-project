@@ -1,6 +1,9 @@
 package bgu.spl.mics.application.passiveObjects;
 
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -86,11 +89,19 @@ public class Inventory {
      * their respective available amount in the inventory. 
      * This method is called by the main method in order to generate the output.
      */
-	public void printInventoryToFile(String filename){
+	public void printInventoryToFile(String filename) throws IOException {
         HashMap<String,Integer> Filename = new HashMap<>();
 		 Set<String> bookInStock = bookStock.keySet();
+		 String booksInStock = "";
              for (String bookName: bookInStock) {
-                 Filename.putIfAbsent(bookName,bookStock.get(bookName).getAmountInInventory());
+                 Filename.putIfAbsent(bookName, bookStock.get(bookName).getAmountInInventory());
+                    booksInStock = booksInStock+bookName+" "+bookStock.get(bookName).getAmountInInventory()+"\n";
+                 }
+
+                 BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+                 writer.write(booksInStock);
+                 writer.close();
+
         }
 	}
-}
+
