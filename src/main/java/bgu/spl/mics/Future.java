@@ -48,7 +48,6 @@ public class Future<T> {
      * Resolves the result of this Future object.
      */
 	public synchronized void resolve (T result) {
-
 		this.result.set(result);
 		resolved = true;
 		// notify All to wake all the threads waiting for result
