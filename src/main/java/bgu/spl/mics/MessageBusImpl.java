@@ -101,7 +101,7 @@ public class MessageBusImpl implements MessageBus {
 			synchronized (eventsSubscribers.get(e.getClass())) {
 				m = eventsSubscribers.get(e.getClass()).poll();
 				// checks if there is a micro service which can handle this.
-				if (m != null)
+				if (m == null)
 					return null;
 					// moves the micro to the end of the queue (round robin manner), adds message to the microMessageQueue.
 				else {

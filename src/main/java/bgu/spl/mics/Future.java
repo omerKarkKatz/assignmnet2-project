@@ -20,7 +20,7 @@ public class Future<T> {
 	private boolean resolved;
 
 	public Future() {
-		result = null;
+		result = new AtomicReference();
 		resolved = false;
 	}
 	
@@ -52,7 +52,7 @@ public class Future<T> {
 		this.result.set(result);
 		resolved = true;
 		// notify All to wake all the threads waiting for result
-		notifyAll();
+
 	}
 	
 	/**
