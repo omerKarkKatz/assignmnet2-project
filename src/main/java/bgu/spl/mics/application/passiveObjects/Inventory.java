@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * You can add ONLY private fields and methods to this class as you see fit.
  */
 public class Inventory {
+
 	private static class SingletonHolder {
 		private static Inventory inventoryInstance = new Inventory();
 
