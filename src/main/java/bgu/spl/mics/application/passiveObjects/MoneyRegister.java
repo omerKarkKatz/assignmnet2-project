@@ -1,8 +1,8 @@
 package bgu.spl.mics.application.passiveObjects;
-
-
-import java.io.FileWriter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -72,11 +72,19 @@ public class MoneyRegister {
      * This method is called by the main method in order to generate the output.. 
      */
 	public void printOrderReceipts(String filename) {
+
 		try {
-			FileWriter fileWriter = new FileWriter(filename);
+			FileOutputStream file = new FileOutputStream(filename);
+			ObjectOutputStream out = new ObjectOutputStream(file);
+
+			out.writeObject(ordersInMoneyRegister);
+
+			out.close();
+			file.close();
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
 	}
 }
