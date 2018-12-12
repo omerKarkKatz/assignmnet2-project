@@ -19,6 +19,7 @@ public class Customer {
 	private int creditCardNumber;
 	private int availableAmountInCreditCard;
 
+
 	private Customer(int id, String name, String address, int distance, int creditCardNumber, int availableAmountInCreditCard){
 		this.id = id;
 		this.name = name;
@@ -80,6 +81,10 @@ public class Customer {
      */
 	public int getCreditNumber() {
 		return creditCardNumber;
+	}
+
+	public void setAvailableAmountInCreditCard(int availableAmountInCreditCard) {
+		this.availableAmountInCreditCard = availableAmountInCreditCard;
 	}
 	
 }

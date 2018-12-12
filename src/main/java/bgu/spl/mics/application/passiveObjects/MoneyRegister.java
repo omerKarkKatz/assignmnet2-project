@@ -1,6 +1,8 @@
 package bgu.spl.mics.application.passiveObjects;
 
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -42,7 +44,7 @@ public class MoneyRegister {
      * @param r		The receipt to save in the money register.
      */
 	public void file (OrderReceipt r) {
-		// check woth someone.
+		// check with someone.
 		ordersInMoneyRegister.add(r);
 		totalEarnings.addAndGet(r.getPrice());
 	}
@@ -60,7 +62,8 @@ public class MoneyRegister {
      * @param amount 	amount to charge
      */
 	public void chargeCreditCard(Customer c, int amount) {
-		// TODO Implement this
+		//TODO: check where do i need to sync this.
+		c.setAvailableAmountInCreditCard(c.getAvailableCreditAmount()-amount);
 	}
 	
 	/**
@@ -69,6 +72,11 @@ public class MoneyRegister {
      * This method is called by the main method in order to generate the output.. 
      */
 	public void printOrderReceipts(String filename) {
-		//TODO: Implement this
+		try {
+			FileWriter fileWriter = new FileWriter(filename);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
