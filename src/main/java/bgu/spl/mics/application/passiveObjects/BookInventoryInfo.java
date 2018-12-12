@@ -12,6 +12,7 @@ public class BookInventoryInfo {
 	private int Amount;
 	private int Prise;
 
+
 	public BookInventoryInfo(String title, int amount, int prise){
 	Title = title; Amount = amount; Prise = prise;
 	}
@@ -22,7 +23,6 @@ public class BookInventoryInfo {
      * @return The title of this book.   
      */
 	public String getBookTitle() {
-		// TODO Implement this
 		return Title;
 	}
 
@@ -32,7 +32,6 @@ public class BookInventoryInfo {
      * @return amount of available books.      
      */
 	public int getAmountInInventory() {
-		// TODO Implement this
 		return Amount;
 	}
 
@@ -42,8 +41,11 @@ public class BookInventoryInfo {
      * @return the price of the book.
      */
 	public int getPrice() {
-		// TODO Implement this
 		return Prise;
+	}
+	public void reduceAmount(){
+		if (this.Amount > 0)
+			--this.Amount;
 	}
 	
 	

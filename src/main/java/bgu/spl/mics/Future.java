@@ -20,7 +20,7 @@ public class Future<T> {
 	private boolean resolved;
 
 	public Future() {
-		result = null;
+		result = new AtomicReference();
 		resolved = false;
 	}
 	
@@ -34,7 +34,7 @@ public class Future<T> {
      */
 
 	// to check what will happen if the result would stay null all the time.
-	public T get() {
+	public synchronized T get() {
 		while (!isDone()) {
 			try {
 				this.wait();
@@ -47,8 +47,7 @@ public class Future<T> {
 		/**
      * Resolves the result of this Future object.
      */
-	public void resolve (T result) {
-
+	public synchronized void resolve (T result) {
 		this.result.set(result);
 		resolved = true;
 		// notify All to wake all the threads waiting for result

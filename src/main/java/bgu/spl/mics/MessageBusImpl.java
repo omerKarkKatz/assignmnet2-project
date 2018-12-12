@@ -73,14 +73,21 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public void sendBroadcast(Broadcast b) {
 
-				Iterator<MicroService> iter = broadcastSubscribers.get(b.getClass()).iterator();
-				broadCastLock.readLock().lock();
-				try {
-					while (iter.hasNext())
-						QueueOfMicroTasks.get(iter.next()).add(b);
-				}finally {
-					broadCastLock.readLock().unlock();
-				}
+		Iterator<MicroService> iter;
+		Vector<MicroService> tmp1=broadcastSubscribers.get(b.getClass());
+		if (tmp1 == null) {
+			System.out.println("noo handler for this Broadcast");
+		}
+		else{
+			iter = tmp1.iterator();
+			broadCastLock.readLock().lock();
+			try {
+				while (iter.hasNext())
+					QueueOfMicroTasks.get(iter.next()).add(b);
+			}finally {
+				broadCastLock.readLock().unlock();
+			}
+		}
 
 	}
 
@@ -90,11 +97,11 @@ public class MessageBusImpl implements MessageBus {
 		Future<T> futureEvent = new Future<T>();
 		EventToFuture.putIfAbsent(e, futureEvent);
 		MicroService m = null;
-		if(eventsSubscribers.contains(e.getClass())) {
+		if(eventsSubscribers.containsKey(e.getClass())) {
 			synchronized (eventsSubscribers.get(e.getClass())) {
 				m = eventsSubscribers.get(e.getClass()).poll();
 				// checks if there is a micro service which can handle this.
-				if (m != null)
+				if (m == null)
 					return null;
 					// moves the micro to the end of the queue (round robin manner), adds message to the microMessageQueue.
 				else {
@@ -113,7 +120,7 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void register(MicroService m) {
-		QueueOfMicroTasks.putIfAbsent(m, new LinkedBlockingQueue<Message>());
+		QueueOfMicroTasks.putIfAbsent(m, new LinkedBlockingQueue<>());
 	}
 
 
@@ -122,16 +129,16 @@ public class MessageBusImpl implements MessageBus {
 		// check if clear is sync.
 		QueueOfMicroTasks.get(m).clear();
 		QueueOfMicroTasks.remove(m);
-		if (messagesOfMicroToDelete.contains(m)) {
+		if (messagesOfMicroToDelete.containsKey(m)) {
 			broadCastLock.writeLock().lock();
 			try {
 				Iterator<Class<? extends Message>> iter = messagesOfMicroToDelete.get(m).iterator();
 				while (iter.hasNext()) {
-					Class<? extends Message> message = iter.next();
-					if (message.getClass().equals(Event.class))
-						eventsSubscribers.get(message).remove(m);
+					Class<? extends Message> messageIter = iter.next();
+					if (eventsSubscribers.containsKey(messageIter))
+						eventsSubscribers.get(messageIter).remove(m);
 					else
-						broadcastSubscribers.get(message).remove(m);
+						broadcastSubscribers.get(messageIter).remove(m);
 				}
 			}finally {
 				broadCastLock.writeLock().unlock();
@@ -142,7 +149,7 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException, IllegalStateException {
-			if (!QueueOfMicroTasks.contains(m))
+			if (!QueueOfMicroTasks.containsKey(m))
 				throw new IllegalStateException();
 			else
 				return QueueOfMicroTasks.get(m).take();

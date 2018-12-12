@@ -1,6 +1,12 @@
 package bgu.spl.mics.application.passiveObjects;
 
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Passive data-object representing the store inventory.
@@ -14,12 +20,18 @@ package bgu.spl.mics.application.passiveObjects;
  */
 public class Inventory {
 
+	private static class SingletonHolder {
+		private static Inventory inventoryInstance = new Inventory();
+
+	}
+
+	private ConcurrentHashMap <String,BookInventoryInfo> bookStock;
 	/**
      * Retrieves the single instance of this class.
      */
 	public static Inventory getInstance() {
 		//TODO: Implement this
-		return null;
+		return SingletonHolder.inventoryInstance;
 	}
 	
 	/**
@@ -30,6 +42,9 @@ public class Inventory {
      * 						of the inventory.
      */
 	public void load (BookInventoryInfo[ ] inventory ) {
+        for (BookInventoryInfo book: inventory) {
+           bookStock.putIfAbsent(book.getBookTitle(), book);
+        }
 		
 	}
 	
@@ -42,8 +57,15 @@ public class Inventory {
      * 			second should reduce by one the number of books of the desired type.
      */
 	public OrderResult take (String book) {
-		
-		return null;
+		if (bookStock.containsKey(book)){
+		    if (bookStock.get(book).getAmountInInventory() > 0) {
+                bookStock.get(book).reduceAmount();
+                return OrderResult.SUCCESSFULLY_TAKEN;
+            }
+		    else
+		        return OrderResult.NOT_IN_STOCK;
+        }
+		return OrderResult.NOT_IN_STOCK;
 	}
 	
 	
@@ -55,7 +77,8 @@ public class Inventory {
      * @return the price of the book if it is available, -1 otherwise.
      */
 	public int checkAvailabiltyAndGetPrice(String book) {
-		//TODO: Implement this
+	    if (bookStock.containsKey(book) && bookStock.get(book).getAmountInInventory()>0)
+	        return bookStock.get(book).getPrice();
 		return -1;
 	}
 	
@@ -67,7 +90,19 @@ public class Inventory {
      * their respective available amount in the inventory. 
      * This method is called by the main method in order to generate the output.
      */
-	public void printInventoryToFile(String filename){
-		//TODO: Implement this
+	public void printInventoryToFile(String filename) throws IOException {
+        HashMap<String,Integer> Filename = new HashMap<>();
+		 Set<String> bookInStock = bookStock.keySet();
+		 String booksInStock = "";
+             for (String bookName: bookInStock) {
+                 Filename.putIfAbsent(bookName, bookStock.get(bookName).getAmountInInventory());
+                    booksInStock = booksInStock+bookName+" "+bookStock.get(bookName).getAmountInInventory()+"\n";
+                 }
+
+                 BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+                 writer.write(booksInStock);
+                 writer.close();
+
+        }
 	}
-}
+
