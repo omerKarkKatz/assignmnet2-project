@@ -1,5 +1,6 @@
 package bgu.spl.mics.application.passiveObjects;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Vector;
 
@@ -9,7 +10,7 @@ import java.util.Vector;
  * <p>
  * You may add fields and methods to this class as you see fit (including public methods).
  */
-public class Customer {
+public class Customer implements Serializable {
 
 	private int id;
 	private String name;
@@ -18,7 +19,7 @@ public class Customer {
 	private Vector receipts;
 	private int creditCardNumber;
 	private int availableAmountInCreditCard;
-
+	private final transient Object moneyLock = new Object();
 
 	private Customer(int id, String name, String address, int distance, int creditCardNumber, int availableAmountInCreditCard){
 		this.id = id;

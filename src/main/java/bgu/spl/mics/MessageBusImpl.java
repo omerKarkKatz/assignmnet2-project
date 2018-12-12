@@ -144,7 +144,9 @@ public class MessageBusImpl implements MessageBus {
 				broadCastLock.writeLock().unlock();
 			}
 		}
+		notifyAll();
 		m.terminate();
+
 	}
 
 	@Override

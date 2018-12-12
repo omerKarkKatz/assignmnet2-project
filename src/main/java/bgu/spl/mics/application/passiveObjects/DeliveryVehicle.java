@@ -20,7 +20,6 @@ public class DeliveryVehicle {
      * Retrieves the license of this delivery vehicle.   
      */
 	public int getLicense() {
-
 		return License;
 	}
 	
@@ -30,7 +29,6 @@ public class DeliveryVehicle {
      * @return Number of ticks needed for 1 Km.
      */
 	public int getSpeed() {
-
 		return Speed;
 	}
 	
