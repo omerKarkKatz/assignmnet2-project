@@ -24,7 +24,7 @@ public class APIService extends MicroService{
 
 	@Override
 	protected void initialize() {
-		this.subscribeBroadcast(TickBroadcast.class , message -> );
+		this.subscribeBroadcast(TickBroadcast.class , );
 		
 	}
 
