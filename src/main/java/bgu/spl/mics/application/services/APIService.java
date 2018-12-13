@@ -4,6 +4,8 @@ import bgu.spl.mics.application.messages.BookOrderEvent;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.passiveObjects.*;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * APIService is in charge of the connection between a client and the store.
  * It informs the store about desired purchases using {@link BookOrderEvent}.
@@ -16,6 +18,7 @@ import bgu.spl.mics.application.passiveObjects.*;
 public class APIService extends MicroService{
 
 	private Customer customer;
+	private AtomicInteger CurrentTick;
 
 	public APIService() {
 		super("Change_This_Name");
@@ -24,7 +27,7 @@ public class APIService extends MicroService{
 
 	@Override
 	protected void initialize() {
-		this.subscribeBroadcast(TickBroadcast.class , );
+		this.subscribeBroadcast(TickBroadcast.class , message -> );
 		
 	}
 
