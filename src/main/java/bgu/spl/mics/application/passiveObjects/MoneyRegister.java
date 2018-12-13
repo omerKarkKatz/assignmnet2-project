@@ -1,4 +1,6 @@
 package bgu.spl.mics.application.passiveObjects;
+import bgu.spl.mics.MySerializable;
+
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -85,6 +87,12 @@ public class MoneyRegister {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		// another option with Serialized class for generics.
+		/*
+		MySerializable serialOrdersInMoneyRegister = new MySerializable(ordersInMoneyRegister, filename);
+		serialOrdersInMoneyRegister.serializeObjToFile();
+		*/
 
 	}
 }
