@@ -1,10 +1,7 @@
 package bgu.spl.mics.application.services;
-
-import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.passiveObjects.*;
-
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -47,7 +44,6 @@ public class TimeService extends MicroService{
 
 	@Override
 	protected void initialize() {
-		MessageBusImpl.getInstance().register(this);
 		timer.scheduleAtFixedRate(timerTask ,0, speed);
 		terminate();
 	}

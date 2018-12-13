@@ -145,6 +145,8 @@ public class MessageBusImpl implements MessageBus {
 			}
 		}
 		notifyAll();
+
+		// check mybe you dont need to register.
 		m.terminate();
 
 	}
