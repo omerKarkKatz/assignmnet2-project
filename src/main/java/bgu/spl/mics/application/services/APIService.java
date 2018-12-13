@@ -29,8 +29,9 @@ public class APIService extends MicroService{
 	protected void initialize() {
 		this.subscribeBroadcast(TickBroadcast.class , tickBrod -> {
 			currentTick.set(tickBrod.getCurrTick());
-			
 		});
+
+
 
 	}
 

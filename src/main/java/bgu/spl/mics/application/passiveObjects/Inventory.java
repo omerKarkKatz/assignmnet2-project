@@ -1,8 +1,6 @@
 package bgu.spl.mics.application.passiveObjects;
 
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Set;
@@ -90,7 +88,8 @@ public class Inventory {
      * This method is called by the main method in order to generate the output.
      */
 	public void printInventoryToFile(String filename) throws IOException {
-        HashMap<String,Integer> Filename = new HashMap<>();
+
+
 
 
         }
