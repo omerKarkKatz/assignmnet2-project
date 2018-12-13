@@ -18,17 +18,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class APIService extends MicroService{
 
 	private Customer customer;
-	private AtomicInteger CurrentTick;
+	private AtomicInteger currentTick = new AtomicInteger(0);
 
-	public APIService() {
-		super("Change_This_Name");
-		// TODO Implement this
+	public APIService(int indexNum , Customer customer) {
+		super("APIService" + indexNum);
+		this.customer = customer;
 	}
 
 	@Override
 	protected void initialize() {
-		this.subscribeBroadcast(TickBroadcast.class , message -> );
-		
+		this.subscribeBroadcast(TickBroadcast.class , tickBrod -> {
+			currentTick.set(tickBrod.getCurrTick());
+		});
+
 	}
 
 }
