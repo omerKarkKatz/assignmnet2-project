@@ -1,6 +1,8 @@
 package bgu.spl.mics.application.passiveObjects;
 
 
+import bgu.spl.mics.MySerializable;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Set;
@@ -88,10 +90,12 @@ public class Inventory {
      * This method is called by the main method in order to generate the output.
      */
 	public void printInventoryToFile(String filename) throws IOException {
-
-
-
-
+			ConcurrentHashMap<String, Integer> bookTitle_Amount_ToPrint = new ConcurrentHashMap<>();
+			for(String str : bookStock.keySet()){
+				bookTitle_Amount_ToPrint.put(str , bookStock.get(str).getAmountInInventory());
+			}
+		MySerializable myInventorySerializable = new MySerializable(bookTitle_Amount_ToPrint, filename);
+		myInventorySerializable.serializeObjToFile();
         }
 	}
 

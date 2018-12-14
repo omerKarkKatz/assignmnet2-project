@@ -22,4 +22,5 @@ public class BookOrderEvent implements Event<OrderReceipt> {
         return orderReceipt;
     }
 
+
 }
