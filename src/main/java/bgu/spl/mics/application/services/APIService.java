@@ -36,6 +36,7 @@ public class APIService extends MicroService{
 	@Override
 	protected void initialize() {
 		this.subscribeBroadcast(TickBroadcast.class , tickBrod -> currentTick.set(tickBrod.getCurrTick()));
+		// check if the current tick matches the next order think how to di this.
 
 
 
