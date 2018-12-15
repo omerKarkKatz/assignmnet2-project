@@ -3,7 +3,8 @@ import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.BookOrderEvent;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.passiveObjects.*;
-import jdk.internal.vm.compiler.collections.Pair;
+import javafx.util.Pair;
+
 
 
 import java.util.*;
@@ -46,15 +47,15 @@ public class APIService extends MicroService{
 			// check if there are more orders to do
 			if (bookOrderSheduleIter.hasNext()) {
 				Pair<String, Integer> bookOrder = bookOrderSheduleIter.next();
-				int orderTick = bookOrder.getRight();
+				int orderTick = bookOrder.getValue();
 				// checks all books that need to be ordered on this tick.
 				while (currentTick.get() == orderTick) {
-					String bookTitle = bookOrder.getLeft();
+					String bookTitle = bookOrder.getKey();
 					// sending the order book event
 					sendEvent(new BookOrderEvent(customer, bookTitle, ));
 					if(bookOrderSheduleIter.hasNext()) {
 						bookOrder = bookOrderSheduleIter.next();
-						orderTick = bookOrder.getRight();
+						orderTick = bookOrder.getValue();
 					}
 				}
 			}
@@ -63,16 +64,13 @@ public class APIService extends MicroService{
 	}
 
 	private void sortShedule(List<Pair<String,Integer>> bookOrderSchedule){
-		Collections.sort(bookOrderSchedule, new Comparator<Pair<String, Integer>>() {
-			@Override
-			public int compare(Pair<String, Integer> o1, Pair<String, Integer> o2) {
-				if(o1.getRight() > o2.getRight()){
-					return 1;
-				}else if(o1.getRight() == o2.getRight())
-					return 0;
-				else
-					return -1;
-			}
+		Collections.sort(bookOrderSchedule, (o1, o2) -> {
+			if(o1.getValue() > o2.getValue()){
+				return 1;
+			}else if(o1.getValue() == o2.getValue())
+				return 0;
+			else
+				return -1;
 		});
 	}
 
