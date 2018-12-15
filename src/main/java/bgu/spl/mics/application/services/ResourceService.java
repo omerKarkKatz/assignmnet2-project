@@ -28,7 +28,7 @@ public class ResourceService extends MicroService{
 
 	@Override
 	protected void initialize() {
-	subscribeEvent(AcquireVehicleEvent.class, getVehicle -> this.complete(getVehicle,resourceHolderInstance.acquireVehicle().get()));
+	subscribeEvent(AcquireVehicleEvent.class, getVehicle -> this.complete(getVehicle,resourceHolderInstance.acquireVehicle()));
 	subscribeEvent(ReleaceVehicleEvent.class, vehicle -> resourceHolderInstance.releaseVehicle(vehicle.getVehicle()));
 	}
 
