@@ -24,7 +24,9 @@ public class BookOrderEvent implements Event<OrderReceipt> {
         return orderReceipt;
     }
 
-    public String getBookTitle() { return bookTitle; }
+    public String getBookTitle() {
+        return bookTitle;
+    }
 
 
 }

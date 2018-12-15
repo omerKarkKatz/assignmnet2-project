@@ -5,6 +5,7 @@ import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.AcquireVehicleEvent;
 import bgu.spl.mics.application.messages.DeliveryEvent;
+import bgu.spl.mics.application.messages.ReleaceVehicleEvent;
 import bgu.spl.mics.application.passiveObjects.DeliveryVehicle;
 import bgu.spl.mics.application.passiveObjects.Inventory;
 import bgu.spl.mics.application.passiveObjects.MoneyRegister;
@@ -29,7 +30,14 @@ public class LogisticsService extends MicroService {
 	@Override
 	protected void initialize() {
 		AcquireVehicleEvent AV = new AcquireVehicleEvent();
-		subscribeEvent(DeliveryEvent.class, deliveryEvent -> sendEvent(AV).get().get().deliver(deliveryEvent.getAddress(),deliveryEvent.getDistance()));
+
+
+		subscribeEvent(DeliveryEvent.class, Deliver ->{
+			DeliveryVehicle deliveryVehicle = sendEvent(AV).get().get();
+			deliveryVehicle.deliver(Deliver.getAddress(),Deliver.getDistance());
+			ReleaceVehicleEvent RV = new ReleaceVehicleEvent(deliveryVehicle);
+			sendEvent(RV);
+		});
 
 	}
 
