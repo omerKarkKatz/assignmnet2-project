@@ -3,6 +3,7 @@ import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.BookOrderEvent;
 import bgu.spl.mics.application.messages.CheckAvilabilityEvent;
+import bgu.spl.mics.application.messages.TakeBookEvent;
 import bgu.spl.mics.application.passiveObjects.*;
 
 /**
@@ -30,14 +31,13 @@ public class InventoryService extends MicroService{
 	protected void initialize() {
 		subscribeEvent(CheckAvilabilityEvent.class, checkAvilabilityEv -> {
 			bookTitle = checkAvilabilityEv.getBookTitle();
-			// Todo:: need to sync this or to sync only in the payment and decrease time because
-			//  mybe some one will want to take it and he dosent have en
-
-
-
 			priceOrMinus1 = inventory.checkAvailabiltyAndGetPrice(bookTitle);
 			// resoves future with the price of the book if avilable
 			MessageBusImpl.getInstance().complete(checkAvilabilityEv, priceOrMinus1);
+		});
+
+		subscribeEvent(TakeBookEvent.class, takeBookEv -> {
+
 		});
 		
 	}

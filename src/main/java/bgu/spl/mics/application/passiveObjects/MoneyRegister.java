@@ -64,7 +64,6 @@ public class MoneyRegister {
      * @param amount 	amount to charge
      */
 	public void chargeCreditCard(Customer c, int amount) {
-		//TODO: check where do i need to sync this.
 		c.setAvailableAmountInCreditCard(c.getAvailableCreditAmount()-amount);
 	}
 	
