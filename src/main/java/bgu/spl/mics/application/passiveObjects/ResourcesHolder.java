@@ -1,9 +1,12 @@
 package bgu.spl.mics.application.passiveObjects;
 
 import bgu.spl.mics.Future;
+import bgu.spl.mics.MessageBusImpl;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Passive object representing the resource manager.
@@ -23,14 +26,16 @@ public class ResourcesHolder {
      * Retrieves the single instance of this class.
      */
 
-	private Queue<DeliveryVehicle> deliveryVehicleQueue;
+	private LinkedBlockingQueue<DeliveryVehicle> deliveryVehicleQueue;
+	private LinkedBlockingQueue<Future<DeliveryVehicle>> deliveryVehicleFutureQueue;
 
 	public static ResourcesHolder getInstance() {
 		return SingletonResourceHolder.ResourceHOlderInstance;
 	}
 
 	public ResourcesHolder() {
-		this.deliveryVehicleQueue = new LinkedList<>();
+		this.deliveryVehicleQueue = new LinkedBlockingQueue<DeliveryVehicle>();
+		this.deliveryVehicleFutureQueue = new LinkedBlockingQueue<Future<DeliveryVehicle>>();
 	}
 
 	/**
@@ -42,7 +47,13 @@ public class ResourcesHolder {
      */
 	public Future<DeliveryVehicle> acquireVehicle() {
 		Future<DeliveryVehicle> deliveryVehicleFuture = new Future<>();
-		return null;
+		synchronized (this) {
+		    if (deliveryVehicleQueue.size() > 0)
+                deliveryVehicleFuture.resolve(deliveryVehicleQueue.poll());
+		     else
+		         deliveryVehicleFutureQueue.add(deliveryVehicleFuture);
+			return deliveryVehicleFuture;
+		}
 	}
 	
 	/**
@@ -52,8 +63,12 @@ public class ResourcesHolder {
      * @param vehicle	{@link DeliveryVehicle} to be released.
      */
 	public void releaseVehicle(DeliveryVehicle vehicle) {
-		//TODO: Implement this
-	}
+	    if (deliveryVehicleFutureQueue.size()> 0)
+	        deliveryVehicleFutureQueue.poll().resolve(vehicle);
+	          else
+                deliveryVehicleQueue.add(vehicle);
+        }
+
 	
 	/**
      * Receives a collection of vehicles and stores them.
@@ -61,7 +76,8 @@ public class ResourcesHolder {
      * @param vehicles	Array of {@link DeliveryVehicle} instances to store.
      */
 	public void load(DeliveryVehicle[] vehicles) {
-		//TODO: Implement this
+	    for (DeliveryVehicle vehicle: vehicles)
+	        deliveryVehicleQueue.add(vehicle);
 	}
 
 }

@@ -3,8 +3,7 @@ import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.BookOrderEvent;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.passiveObjects.*;
-import jdk.internal.vm.compiler.collections.Pair;
-
+import javafx.util.Pair;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 
