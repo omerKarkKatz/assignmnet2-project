@@ -25,9 +25,7 @@ public class APIService extends MicroService{
 	private Vector<Pair<String,Integer >> bookOrderSchedule = new Vector<>();
 	private Iterator<Pair<String, Integer>> bookOrderSheduleIter;
 	// id num of this APIService the number of
-	//TODO: add to the countractor a list of the books he wants to order and when he wants to order them
-	// this list will need to be sorted by ticks/ check maybe this should be in a different place because
-	// mybe a few api can handle a customer or an api is a customer.
+	//TODO: think where are we sapoused to recive the orderRecite or null.
 
 	public APIService(int id , Customer customer, Vector<Pair<String,Integer>> orderSchedule) {
 		super("APIService" + id);
