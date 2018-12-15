@@ -3,11 +3,11 @@ import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.BookOrderEvent;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.passiveObjects.*;
-import javafx.util.Pair;
 
 
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -23,18 +23,13 @@ public class APIService extends MicroService{
 
 	private Customer customer;
 	private AtomicInteger currentTick = new AtomicInteger(0);
-	private Vector<Pair<String,Integer >> bookOrderSchedule = new Vector<>();
-	private Iterator<Pair<String, Integer>> bookOrderSheduleIter;
-	// id num of this APIService the number of
+	private ConcurrentHashMap<Integer, List<String>> bookToOrderInCurrTick;
 	//TODO: think where are we sapoused to recive the orderRecite or null.
 
-	public APIService(int id , Customer customer, Vector<Pair<String,Integer>> orderSchedule) {
+	public APIService(int id , Customer customer, ConcurrentHashMap booksToOrder) {
 		super("APIService" + id);
 		this.customer = customer;
-		this.bookOrderSchedule = orderSchedule;
-		// sorts the list of order book Schedule
-		sortShedule(bookOrderSchedule);
-		this.bookOrderSheduleIter = bookOrderSchedule.iterator();
+		this.bookToOrderInCurrTick = booksToOrder;
 	}
 
 
@@ -43,35 +38,12 @@ public class APIService extends MicroService{
 	protected void initialize() {
 		this.subscribeBroadcast(TickBroadcast.class , tickBrod -> {
 			currentTick.set(tickBrod.getCurrTick());
-
-			// check if there are more orders to do
-			if (bookOrderSheduleIter.hasNext()) {
-				Pair<String, Integer> bookOrder = bookOrderSheduleIter.next();
-				int orderTick = bookOrder.getValue();
-				// checks all books that need to be ordered on this tick.
-				while (currentTick.get() == orderTick) {
-					String bookTitle = bookOrder.getKey();
-					// sending the order book event
-					sendEvent(new BookOrderEvent(customer, bookTitle, ));
-					if(bookOrderSheduleIter.hasNext()) {
-						bookOrder = bookOrderSheduleIter.next();
-						orderTick = bookOrder.getValue();
-					}
+			if(bookToOrderInCurrTick.containsKey(currentTick)){
+				List<String> orderNow = bookToOrderInCurrTick.get(currentTick);
+				for(String bookTitle: orderNow){
+					sendEvent(new BookOrderEvent(customer, bookTitle, currentTick.get()));
 				}
 			}
-
 		});
 	}
-
-	private void sortShedule(List<Pair<String,Integer>> bookOrderSchedule){
-		Collections.sort(bookOrderSchedule, (o1, o2) -> {
-			if(o1.getValue() > o2.getValue()){
-				return 1;
-			}else if(o1.getValue() == o2.getValue())
-				return 0;
-			else
-				return -1;
-		});
-	}
-
 }
