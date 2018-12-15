@@ -87,5 +87,12 @@ public class Customer implements Serializable {
 	public void setAvailableAmountInCreditCard(int availableAmountInCreditCard) {
 		this.availableAmountInCreditCard = availableAmountInCreditCard;
 	}
-	
+
+	public Vector getReceipts() {
+		return receipts;
+	}
+
+	public Object getMoneyLock() {
+		return moneyLock;
+	}
 }

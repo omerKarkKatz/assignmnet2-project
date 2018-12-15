@@ -45,7 +45,7 @@ public class BookInventoryInfo {
 	}
 	public void reduceAmount(){
 		if (this.Amount > 0)
-			--this.Amount;
+			this.Amount--;
 	}
 	
 	

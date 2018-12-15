@@ -1,5 +1,10 @@
 package bgu.spl.mics.application.services;
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.BookOrderEvent;
+import bgu.spl.mics.application.messages.CheckAvilabilityEvent;
+import bgu.spl.mics.application.messages.TakeBookEvent;
+import bgu.spl.mics.application.messages.TickBroadcast;
+import bgu.spl.mics.application.passiveObjects.*;
 
 /**
  * Selling service in charge of taking orders from customers.
@@ -13,15 +18,44 @@ import bgu.spl.mics.MicroService;
  */
 public class SellingService extends MicroService{
 
-	public SellingService() {
-		super("Change_This_Name");
+	// TODO add the receipt to the the customer list
+	private int currTick;
+	private MoneyRegister moneyRegister = MoneyRegister.getInstance();
+
+
+	public SellingService(int id) {
+		super("SellingService " + id);
 		// TODO Implement this
 	}
 
 	@Override
 	protected void initialize() {
-		// TODO Implement this
-		
+		// sets the curr Tick.
+		subscribeBroadcast(TickBroadcast.class, tickEv -> currTick = tickEv.getCurrTick());
+
+		subscribeEvent(BookOrderEvent.class , bookOrderEv -> {
+			Customer customer = bookOrderEv.getCustomer();
+			String bookTitle = bookOrderEv.getBookTitle();
+			int price = sendEvent(new CheckAvilabilityEvent(bookTitle)).get();
+			if(price != -1){
+				OrderResult orderResult = null;
+				synchronized (customer.getMoneyLock()) {
+					if (customer.getAvailableCreditAmount() > price) {
+						 orderResult = sendEvent(new TakeBookEvent(bookTitle)).get();
+						if (orderResult == OrderResult.SUCCESSFULLY_TAKEN)
+							moneyRegister.chargeCreditCard(customer, price);
+					}
+				}
+				if (orderResult == OrderResult.SUCCESSFULLY_TAKEN) {
+					OrderReceipt orderReceipt = new OrderReceipt(1, getName(), customer.getId(),
+										bookTitle, price, currTick, bookOrderEv.getOrderTick(), currTick);
+					customer.getReceipts().add(orderReceipt);
+					moneyRegister.file(orderReceipt);
+				}
+			}
+		});
 	}
+
+
 
 }
