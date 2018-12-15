@@ -7,11 +7,13 @@ import bgu.spl.mics.application.passiveObjects.OrderReceipt;
 public class BookOrderEvent implements Event<OrderReceipt> {
 
     private Customer customer;
+    private String bookTitle;
     private OrderReceipt orderReceipt;
 
     public BookOrderEvent(Customer customer, String bookTitle, OrderReceipt orderReceipt) {
         this.customer = customer;
         this.orderReceipt = orderReceipt;
+        this.bookTitle = bookTitle;
     }
 
     public Customer getCustomer() {
@@ -21,6 +23,8 @@ public class BookOrderEvent implements Event<OrderReceipt> {
     public OrderReceipt getOrderReceipt(){
         return orderReceipt;
     }
+
+    public String getBookTitle() { return bookTitle; }
 
 
 }
