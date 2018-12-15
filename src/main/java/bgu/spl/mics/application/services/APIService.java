@@ -24,7 +24,7 @@ public class APIService extends MicroService{
 	private Customer customer;
 	private AtomicInteger currentTick = new AtomicInteger(0);
 	private Vector<Pair<String,Integer >> bookOrderSchedule = new Vector<>();
-	private Iterator<Pair<String, Integer>> bookOrderSheduleIter;
+	private Iterator<Pair<String, Integer>> bookOrderScheduleIter;
 	// id num of this APIService the number of
 	//TODO: think where are we sapoused to recive the orderRecite or null.
 
@@ -33,8 +33,8 @@ public class APIService extends MicroService{
 		this.customer = customer;
 		this.bookOrderSchedule = orderSchedule;
 		// sorts the list of order book Schedule
-		sortShedule(bookOrderSchedule);
-		this.bookOrderSheduleIter = bookOrderSchedule.iterator();
+		sortSchedule(bookOrderSchedule);
+		this.bookOrderScheduleIter = bookOrderSchedule.iterator();
 	}
 
 
@@ -43,27 +43,22 @@ public class APIService extends MicroService{
 	protected void initialize() {
 		this.subscribeBroadcast(TickBroadcast.class , tickBrod -> {
 			currentTick.set(tickBrod.getCurrTick());
-
-			// check if there are more orders to do
-			if (bookOrderSheduleIter.hasNext()) {
-				Pair<String, Integer> bookOrder = bookOrderSheduleIter.next();
-				int orderTick = bookOrder.getValue();
-				// checks all books that need to be ordered on this tick.
-				while (currentTick.get() == orderTick) {
-					String bookTitle = bookOrder.getKey();
-					// sending the order book event
-					sendEvent(new BookOrderEvent(customer, bookTitle, ));
-					if(bookOrderSheduleIter.hasNext()) {
-						bookOrder = bookOrderSheduleIter.next();
-						orderTick = bookOrder.getValue();
-					}
+			boolean order = true;
+			while (order & bookOrderScheduleIter.hasNext()){
+				if (order) {
+					bookOrder = bookOrderScheduleIter.next();
 				}
+				if (bookOrder.getValue()== currentTick.get()){
+					sendEvent(BookOrderEvent());
+				}
+				else
+					order = false;
 			}
 
 		});
 	}
 
-	private void sortShedule(List<Pair<String,Integer>> bookOrderSchedule){
+	private void sortSchedule(List<Pair<String,Integer>> bookOrderSchedule){
 		Collections.sort(bookOrderSchedule, (o1, o2) -> {
 			if(o1.getValue() > o2.getValue()){
 				return 1;

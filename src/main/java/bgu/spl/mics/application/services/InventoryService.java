@@ -31,7 +31,7 @@ public class InventoryService extends MicroService{
 		subscribeEvent(CheckAvilabilityEvent.class, checkAvilabilityEv -> {
 			bookTitle = checkAvilabilityEv.getBookTitle();
 			// Todo:: need to sync this or to sync only in the payment and decrease time because
-			//  mybe some one will want to take it and he dosent have en
+			//  mybe some one will want to take it and he doesn't have en
 
 
 
