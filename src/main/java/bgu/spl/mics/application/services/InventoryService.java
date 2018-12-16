@@ -32,14 +32,12 @@ public class InventoryService extends MicroService{
 		subscribeEvent(CheckAvilabilityEvent.class, checkAvilabilityEv -> {
 			bookTitle = checkAvilabilityEv.getBookTitle();
 			priceOrMinus1 = inventory.checkAvailabiltyAndGetPrice(bookTitle);
-			// resoves future with the price of the book if avilable
+			// resolves future with the price of the book if available
 			MessageBusImpl.getInstance().complete(checkAvilabilityEv, priceOrMinus1);
 		});
 
-		subscribeEvent(TakeBookEvent.class, takeBookEv -> {
-
-		});
-		
+		subscribeEvent(TakeBookEvent.class, takeBookEv ->
+				complete(takeBookEv,inventory.take(takeBookEv.getBookTitle())));
 	}
 
 }

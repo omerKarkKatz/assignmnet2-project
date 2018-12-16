@@ -4,7 +4,7 @@ import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.BookOrderEvent;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.passiveObjects.*;
-
+import javafx.util.Pair;
 
 
 import java.util.*;
@@ -20,31 +20,39 @@ import java.util.concurrent.atomic.AtomicInteger;
  * You can add private fields and public methods to this class.
  * You MAY change constructor signatures and even add new public constructors.
  */
-public class APIService extends MicroService{
+public class APIService extends MicroService {
 
 	private Customer customer;
 	private AtomicInteger currentTick = new AtomicInteger(0);
-	private ConcurrentHashMap<Integer, List<String>> bookToOrderInCurrTick;
+	private ConcurrentHashMap<Integer, Vector<String>> bookToOrderInCurrTick;
 	//TODO: think where are we sapoused to recive the orderRecite or null.
 
-	public APIService(int id , Customer customer, ConcurrentHashMap booksToOrder) {
+	public APIService(int id, Customer customer) {
 		super("APIService" + id);
 		this.customer = customer;
-		this.bookToOrderInCurrTick = booksToOrder;
+		this.bookToOrderInCurrTick = ConstructHashMap(customer.getOrderSchedule());
 	}
-
 
 
 	@Override
 	protected void initialize() {
-		this.subscribeBroadcast(TickBroadcast.class , tickBrod -> {
+		this.subscribeBroadcast(TickBroadcast.class, tickBrod -> {
 			currentTick.set(tickBrod.getCurrTick());
-			if(bookToOrderInCurrTick.containsKey(currentTick)){
+			if (bookToOrderInCurrTick.containsKey(currentTick)) {
 				List<String> orderNow = bookToOrderInCurrTick.get(currentTick);
-				for(String bookTitle: orderNow){
+				for (String bookTitle : orderNow) {
 					sendEvent(new BookOrderEvent(customer, bookTitle, currentTick.get()));
 				}
 			}
 		});
+	}
+
+	private ConcurrentHashMap<Integer,Vector<String>> ConstructHashMap(List<Pair<String, Integer>> bookTick) {
+		ConcurrentHashMap<Integer,Vector<String>> OrderByTick = new ConcurrentHashMap<Integer, Vector<String>>();
+		for (Pair<String, Integer> pair : bookTick) {
+			OrderByTick.putIfAbsent(pair.getValue(),new Vector<String>());
+			OrderByTick.get(pair.getValue()).add(pair.getKey());
+		}
+		return OrderByTick;
 	}
 }

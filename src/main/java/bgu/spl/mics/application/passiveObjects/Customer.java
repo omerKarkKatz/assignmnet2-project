@@ -1,5 +1,7 @@
 package bgu.spl.mics.application.passiveObjects;
 
+import javafx.util.Pair;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Vector;
@@ -20,8 +22,11 @@ public class Customer implements Serializable {
 	private int creditCardNumber;
 	private int availableAmountInCreditCard;
 	private final transient Object moneyLock = new Object();
+	private List<Pair<String,Integer>> OrderSchedule;
 
-	private Customer(int id, String name, String address, int distance, int creditCardNumber, int availableAmountInCreditCard){
+
+
+	private Customer(int id, String name, String address, int distance, int creditCardNumber, int availableAmountInCreditCard, List<Pair<String,Integer>> orderSchedule){
 		this.id = id;
 		this.name = name;
 		this.address = address;
@@ -29,6 +34,7 @@ public class Customer implements Serializable {
 		receipts = new Vector();
 		this.creditCardNumber = creditCardNumber;
 		this.availableAmountInCreditCard = availableAmountInCreditCard;
+		this.OrderSchedule = orderSchedule;
 	}
 	/**
      * Retrieves the name of the customer.
@@ -94,5 +100,9 @@ public class Customer implements Serializable {
 
 	public Object getMoneyLock() {
 		return moneyLock;
+	}
+
+	public List<Pair<String, Integer>> getOrderSchedule() {
+		return OrderSchedule;
 	}
 }
