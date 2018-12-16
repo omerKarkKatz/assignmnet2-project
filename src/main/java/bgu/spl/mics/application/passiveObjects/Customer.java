@@ -26,7 +26,7 @@ public class Customer implements Serializable {
 
 
 
-	private Customer(int id, String name, String address, int distance, int creditCardNumber, int availableAmountInCreditCard, List<Pair<String,Integer>> orderSchedule){
+	public Customer(int id, String name, String address, int distance, int creditCardNumber, int availableAmountInCreditCard, List<Pair<String, Integer>> orderSchedule){
 		this.id = id;
 		this.name = name;
 		this.address = address;
