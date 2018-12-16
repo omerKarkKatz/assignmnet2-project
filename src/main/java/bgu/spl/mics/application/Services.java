@@ -1,8 +1,10 @@
 package bgu.spl.mics.application;
 
+import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.passiveObjects.Customer;
 import bgu.spl.mics.application.services.*;
 
+import java.util.LinkedList;
 import java.util.concurrent.CountDownLatch;
 
 public class Services {
@@ -17,6 +19,8 @@ public class Services {
     private Customer[] customers;
     private int numOfServices;
     private CountDownLatch countDownLatch;
+    private LinkedList<MicroService> services;
+    private LinkedList<Thread> threads;
 
     public Services(int selling, int inventoryService, int logistics, int resourcesService, Customer[] customers) {
         this.selling = selling;
@@ -28,35 +32,36 @@ public class Services {
         countDownLatch = new CountDownLatch(numOfServices);
     }
 
-    public void initialServices(){
-
-        for(int i =1 ; i < selling ; i++){
-            Thread thread = new Thread(new SellingService(i , countDownLatch));
-            thread.start();
+    public void initialServices() {
+        for (int i = 1; i < selling; i++) {
+            services.add(new SellingService(i, countDownLatch));
         }
 
-        for(int i =1 ; i < inventoryService ; i++){
-            Thread thread = new Thread(new InventoryService(i, countDownLatch));
-            thread.start();
+        for (int i = 1; i < inventoryService; i++) {
+            services.add(new InventoryService(i, countDownLatch));
         }
 
-        for(int i =1 ; i < logistics ; i++){
-            Thread thread = new Thread(new LogisticsService(i, countDownLatch));
-            thread.start();
+        for (int i = 1; i < logistics; i++) {
+            services.add(new LogisticsService(i, countDownLatch));
         }
 
-        for(int i =1 ; i < resourcesService ; i++){
-            Thread thread = new Thread(new ResourceService(i, countDownLatch));
-            thread.start();
+        for (int i = 1; i < resourcesService; i++) {
+            services.add(new ResourceService(i, countDownLatch));
         }
 
-        for(int i =1 ; i < customers.length ; i++){
-            Thread thread = new Thread(new APIService(i, countDownLatch, customers[i]));
-            thread.start();
+        for (int i = 1; i < customers.length; i++) {
+            services.add(new APIService(i, countDownLatch, customers[i]));
         }
 
+        services.forEach(service->threads.add(new Thread(service)));
+        threads.forEach(Thread::start);
+    }
 
+    public LinkedList<MicroService> getMicroServices() {
+        return services;
+    }
 
-
+    public LinkedList<Thread> getThreads() {
+        return threads;
     }
 }

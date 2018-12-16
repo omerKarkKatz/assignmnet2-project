@@ -1,10 +1,7 @@
 package bgu.spl.mics.application.passiveObjects;
 import bgu.spl.mics.MySerializable;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -17,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <p>
  * You can add ONLY private fields and methods to this class as you see fit.
  */
-public class MoneyRegister {
+public class MoneyRegister implements Serializable {
 	
 	/**
      * Retrieves the single instance of this class.
