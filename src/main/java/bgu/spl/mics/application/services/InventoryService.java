@@ -6,6 +6,8 @@ import bgu.spl.mics.application.messages.CheckAvilabilityEvent;
 import bgu.spl.mics.application.messages.TakeBookEvent;
 import bgu.spl.mics.application.passiveObjects.*;
 
+import java.util.concurrent.CountDownLatch;
+
 /**
  * InventoryService is in charge of the book inventory and stock.
  * Holds a reference to the {@link Inventory} singleton of the store.
@@ -21,10 +23,11 @@ public class InventoryService extends MicroService{
 	private Inventory inventory = Inventory.getInstance();
 	private String bookTitle;
 	private Integer priceOrMinus1;
+	private CountDownLatch countDownLatch;
 
-	public InventoryService(int id) {
+	public InventoryService(int id, CountDownLatch countDownLatch) {
 		super("InventoryService" + id);
-		// TODO Implement this
+		this.countDownLatch = countDownLatch;
 	}
 
 	@Override
@@ -38,6 +41,8 @@ public class InventoryService extends MicroService{
 
 		subscribeEvent(TakeBookEvent.class, takeBookEv ->
 				complete(takeBookEv,inventory.take(takeBookEv.getBookTitle())));
+
+		countDownLatch.countDown();
 	}
 
 }

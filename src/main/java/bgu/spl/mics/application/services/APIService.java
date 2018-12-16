@@ -9,6 +9,7 @@ import javafx.util.Pair;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -25,10 +26,12 @@ public class APIService extends MicroService {
 	private Customer customer;
 	private AtomicInteger currentTick = new AtomicInteger(0);
 	private ConcurrentHashMap<Integer, Vector<String>> bookToOrderInCurrTick;
+	private CountDownLatch countDownLatch;
 	//TODO: think where are we sapoused to recive the orderRecite or null.
 
-	public APIService(int id, Customer customer) {
+	public APIService(int id, CountDownLatch countDownLatch,  Customer customer) {
 		super("APIService" + id);
+		this.countDownLatch = countDownLatch;
 		this.customer = customer;
 		this.bookToOrderInCurrTick = ConstructHashMap(customer.getOrderSchedule());
 	}
@@ -45,6 +48,8 @@ public class APIService extends MicroService {
 				}
 			}
 		});
+
+		countDownLatch.countDown();
 	}
 
 	private ConcurrentHashMap<Integer,Vector<String>> ConstructHashMap(List<Pair<String, Integer>> bookTick) {

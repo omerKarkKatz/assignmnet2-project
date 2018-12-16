@@ -9,6 +9,8 @@ import bgu.spl.mics.application.passiveObjects.Inventory;
 import bgu.spl.mics.application.passiveObjects.MoneyRegister;
 import bgu.spl.mics.application.passiveObjects.ResourcesHolder;
 
+import java.util.concurrent.CountDownLatch;
+
 /**
  * ResourceService is in charge of the store resources - the delivery vehicles.
  * Holds a reference to the {@link ResourcesHolder} singleton of the store.
@@ -20,16 +22,19 @@ import bgu.spl.mics.application.passiveObjects.ResourcesHolder;
  */
 public class ResourceService extends MicroService{
 	private ResourcesHolder resourceHolderInstance;
+	private CountDownLatch countDownLatch;
 
-	public ResourceService(int id) {
+	public ResourceService(int id , CountDownLatch countDownLatch) {
 		super("ResourceService "+ id);
 		resourceHolderInstance = ResourcesHolder.getInstance();
+		this.countDownLatch = countDownLatch;
 	}
 
 	@Override
 	protected void initialize() {
 	subscribeEvent(AcquireVehicleEvent.class, getVehicle -> this.complete(getVehicle,resourceHolderInstance.acquireVehicle()));
 	subscribeEvent(ReleaceVehicleEvent.class, vehicle -> resourceHolderInstance.releaseVehicle(vehicle.getVehicle()));
+	countDownLatch.countDown();
 	}
 
 }

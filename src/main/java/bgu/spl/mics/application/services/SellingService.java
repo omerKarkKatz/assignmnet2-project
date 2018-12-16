@@ -6,6 +6,8 @@ import bgu.spl.mics.application.messages.TakeBookEvent;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.passiveObjects.*;
 
+import java.util.concurrent.CountDownLatch;
+
 /**
  * Selling service in charge of taking orders from customers.
  * Holds a reference to the {@link MoneyRegister} singleton of the store.
@@ -21,11 +23,11 @@ public class SellingService extends MicroService{
 	// TODO add the receipt to the the customer list
 	private int currTick;
 	private MoneyRegister moneyRegister = MoneyRegister.getInstance();
+	private CountDownLatch countDownLatch;
 
-
-	public SellingService(int id) {
+	public SellingService(int id, CountDownLatch countDownLatch) {
 		super("SellingService " + id);
-		// TODO Implement this
+		this.countDownLatch = countDownLatch;
 	}
 
 	@Override
@@ -54,6 +56,8 @@ public class SellingService extends MicroService{
 				}
 			}
 		});
+
+		countDownLatch.countDown();
 	}
 
 
