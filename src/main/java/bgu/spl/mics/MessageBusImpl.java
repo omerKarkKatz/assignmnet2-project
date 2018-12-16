@@ -26,15 +26,15 @@ public class MessageBusImpl implements MessageBus {
 	private ReadWriteLock broadCastLock;
 
 	private MessageBusImpl(){
-	    QueueOfMicroTasks = new ConcurrentHashMap<>();
-	    eventsSubscribers = new ConcurrentHashMap<>();
-	    broadcastSubscribers = new ConcurrentHashMap<>();
-	    EventToFuture = new ConcurrentHashMap<>();
+		QueueOfMicroTasks = new ConcurrentHashMap<>();
+		eventsSubscribers = new ConcurrentHashMap<>();
+		broadcastSubscribers = new ConcurrentHashMap<>();
+		EventToFuture = new ConcurrentHashMap<>();
 		messagesOfMicroToDelete = new ConcurrentHashMap<>();
 		lockSendTask = new Object();
 		broadCastLock = new ReentrantReadWriteLock(true);
 
-    }
+	}
 
 	public static MessageBus getInstance() {
 		return SingletonHolder.MessegeBusInstance;
@@ -43,23 +43,23 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
 		// check if to sync these 2 lines.
-			messagesOfMicroToDelete.putIfAbsent(m, new Vector<>());
-			messagesOfMicroToDelete.get(m).add(type);
+		messagesOfMicroToDelete.putIfAbsent(m, new Vector<>());
+		messagesOfMicroToDelete.get(m).add(type);
 
-			eventsSubscribers.putIfAbsent(type, new LinkedBlockingQueue<>());
-			eventsSubscribers.get(type).add(m);
+		eventsSubscribers.putIfAbsent(type, new LinkedBlockingQueue<>());
+		eventsSubscribers.get(type).add(m);
 
 	}
 
 	@Override
 	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
 
-			messagesOfMicroToDelete.putIfAbsent(m, new Vector<>());
-			messagesOfMicroToDelete.get(m).add(type);
+		messagesOfMicroToDelete.putIfAbsent(m, new Vector<>());
+		messagesOfMicroToDelete.get(m).add(type);
 
-			//check if this method should be synchronized
-			broadcastSubscribers.putIfAbsent(type, new Vector<>());
-			broadcastSubscribers.get(type).add(m);
+		//check if this method should be synchronized
+		broadcastSubscribers.putIfAbsent(type, new Vector<>());
+		broadcastSubscribers.get(type).add(m);
 
 	}
 
@@ -91,7 +91,7 @@ public class MessageBusImpl implements MessageBus {
 
 	}
 
-	
+
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) {
 		Future<T> futureEvent = new Future<T>();
@@ -113,9 +113,9 @@ public class MessageBusImpl implements MessageBus {
 			}
 		}
 		else{// meaning there is no eventType equals to e
-		    futureEvent = null;
-        }
-			return futureEvent;
+			futureEvent = null;
+		}
+		return futureEvent;
 	}
 
 	@Override
@@ -144,18 +144,14 @@ public class MessageBusImpl implements MessageBus {
 				broadCastLock.writeLock().unlock();
 			}
 		}
-		notifyAll();
-
-		// check mybe you dont need to register.
 		m.terminate();
-
 	}
 
 	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException, IllegalStateException {
-			if (!QueueOfMicroTasks.containsKey(m))
-				throw new IllegalStateException();
-			else
-				return QueueOfMicroTasks.get(m).take();
+		if (!QueueOfMicroTasks.containsKey(m))
+			throw new IllegalStateException();
+		else
+			return QueueOfMicroTasks.get(m).take();
 	}
 }
