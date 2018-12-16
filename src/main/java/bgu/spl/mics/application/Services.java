@@ -30,27 +30,27 @@ public class Services {
 
     public void initialServices(){
 
-        for(int i =0 ; i <= selling ; i++){
+        for(int i =1 ; i < selling ; i++){
             Thread thread = new Thread(new SellingService(i , countDownLatch));
             thread.start();
         }
 
-        for(int i =0 ; i <= inventoryService ; i++){
+        for(int i =1 ; i < inventoryService ; i++){
             Thread thread = new Thread(new InventoryService(i, countDownLatch));
             thread.start();
         }
 
-        for(int i =0 ; i <= logistics ; i++){
+        for(int i =1 ; i < logistics ; i++){
             Thread thread = new Thread(new LogisticsService(i, countDownLatch));
             thread.start();
         }
 
-        for(int i =0 ; i <= resourcesService ; i++){
+        for(int i =1 ; i < resourcesService ; i++){
             Thread thread = new Thread(new ResourceService(i, countDownLatch));
             thread.start();
         }
 
-        for(int i =0 ; i <= customers.length ; i++){
+        for(int i =1 ; i < customers.length ; i++){
             Thread thread = new Thread(new APIService(i, countDownLatch, customers[i]));
             thread.start();
         }
