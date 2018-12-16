@@ -54,10 +54,7 @@ public class SellingService extends MicroService{
 			}
 		});
 
-		countDownLatch.countDown();
 		subscribeBroadcast(TerminationBroadcast.class, closingStore -> terminate());
+		countDownLatch.countDown();
 	}
-
-
-
 }
