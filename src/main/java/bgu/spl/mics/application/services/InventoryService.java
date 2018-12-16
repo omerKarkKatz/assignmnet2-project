@@ -4,6 +4,7 @@ import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.BookOrderEvent;
 import bgu.spl.mics.application.messages.CheckAvilabilityEvent;
 import bgu.spl.mics.application.messages.TakeBookEvent;
+import bgu.spl.mics.application.messages.TerminationBroadcast;
 import bgu.spl.mics.application.passiveObjects.*;
 
 import java.util.concurrent.CountDownLatch;
@@ -41,7 +42,7 @@ public class InventoryService extends MicroService{
 
 		subscribeEvent(TakeBookEvent.class, takeBookEv ->
 				complete(takeBookEv,inventory.take(takeBookEv.getBookTitle())));
-
+		subscribeBroadcast(TerminationBroadcast.class, closingStore -> terminate());
 		countDownLatch.countDown();
 	}
 

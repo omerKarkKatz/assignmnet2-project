@@ -1,5 +1,6 @@
 package bgu.spl.mics.application.services;
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.TerminationBroadcast;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.passiveObjects.*;
 import java.util.Timer;
@@ -37,6 +38,7 @@ public class TimeService extends MicroService{
 				passedTickes.incrementAndGet();
 				sendBroadcast(new TickBroadcast(passedTickes.get()));
 			}else
+				sendBroadcast(new TerminationBroadcast());
 				timer.cancel();
 		}
 
@@ -46,6 +48,7 @@ public class TimeService extends MicroService{
 	protected void initialize() {
 		timer.scheduleAtFixedRate(timerTask ,0, speed);
 		terminate();
+
 	}
 
 }

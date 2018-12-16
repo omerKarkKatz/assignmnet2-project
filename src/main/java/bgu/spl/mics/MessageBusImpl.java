@@ -1,4 +1,5 @@
 package bgu.spl.mics;
+
 import java.util.Iterator;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
@@ -88,9 +89,7 @@ public class MessageBusImpl implements MessageBus {
 				broadCastLock.readLock().unlock();
 			}
 		}
-
 	}
-
 
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) {
@@ -127,14 +126,17 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public void unregister(MicroService m) {
 		// check if clear is sync.
+		if (QueueOfMicroTasks.get(m).size()> 0){
+			for (Message message: QueueOfMicroTasks.get(m))
+				EventToFuture.get(message).resolve(null);
+		}
+
 		QueueOfMicroTasks.get(m).clear();
 		QueueOfMicroTasks.remove(m);
 		if (messagesOfMicroToDelete.containsKey(m)) {
 			broadCastLock.writeLock().lock();
 			try {
-				Iterator<Class<? extends Message>> iter = messagesOfMicroToDelete.get(m).iterator();
-				while (iter.hasNext()) {
-					Class<? extends Message> messageIter = iter.next();
+				for (Class<? extends Message> messageIter : messagesOfMicroToDelete.get(m)) {
 					if (eventsSubscribers.containsKey(messageIter))
 						eventsSubscribers.get(messageIter).remove(m);
 					else
@@ -154,4 +156,5 @@ public class MessageBusImpl implements MessageBus {
 		else
 			return QueueOfMicroTasks.get(m).take();
 	}
+
 }

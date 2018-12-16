@@ -5,6 +5,7 @@ import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.AcquireVehicleEvent;
 import bgu.spl.mics.application.messages.DeliveryEvent;
 import bgu.spl.mics.application.messages.ReleaceVehicleEvent;
+import bgu.spl.mics.application.messages.TerminationBroadcast;
 import bgu.spl.mics.application.passiveObjects.Inventory;
 import bgu.spl.mics.application.passiveObjects.MoneyRegister;
 import bgu.spl.mics.application.passiveObjects.ResourcesHolder;
@@ -32,9 +33,10 @@ public class ResourceService extends MicroService{
 
 	@Override
 	protected void initialize() {
-	subscribeEvent(AcquireVehicleEvent.class, getVehicle -> this.complete(getVehicle,resourceHolderInstance.acquireVehicle()));
-	subscribeEvent(ReleaceVehicleEvent.class, vehicle -> resourceHolderInstance.releaseVehicle(vehicle.getVehicle()));
-	countDownLatch.countDown();
+	subscribeEvent(AcquireVehicleEvent.class, getVehicleEv -> this.complete(getVehicleEv,resourceHolderInstance.acquireVehicle()));
+	subscribeEvent(ReleaceVehicleEvent.class, vehicleEv -> resourceHolderInstance.releaseVehicle(vehicleEv.getVehicle()));
+	subscribeBroadcast(TerminationBroadcast.class, closingStore -> terminate());
+		countDownLatch.countDown();
 	}
 
 }

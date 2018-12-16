@@ -1,9 +1,6 @@
 package bgu.spl.mics.application.services;
 import bgu.spl.mics.MicroService;
-import bgu.spl.mics.application.messages.BookOrderEvent;
-import bgu.spl.mics.application.messages.CheckAvilabilityEvent;
-import bgu.spl.mics.application.messages.TakeBookEvent;
-import bgu.spl.mics.application.messages.TickBroadcast;
+import bgu.spl.mics.application.messages.*;
 import bgu.spl.mics.application.passiveObjects.*;
 
 import java.util.concurrent.CountDownLatch;
@@ -38,8 +35,8 @@ public class SellingService extends MicroService{
 		subscribeEvent(BookOrderEvent.class , bookOrderEv -> {
 			Customer customer = bookOrderEv.getCustomer();
 			String bookTitle = bookOrderEv.getBookTitle();
-			int price = sendEvent(new CheckAvilabilityEvent(bookTitle)).get();
-			if(price != -1){
+			Integer price = sendEvent(new CheckAvilabilityEvent(bookTitle)).get();
+			if(price != null & price != -1){
 				OrderResult orderResult = null;
 				synchronized (customer.getMoneyLock()) {
 					if (customer.getAvailableCreditAmount() >= price) {
@@ -58,6 +55,7 @@ public class SellingService extends MicroService{
 		});
 
 		countDownLatch.countDown();
+		subscribeBroadcast(TerminationBroadcast.class, closingStore -> terminate());
 	}
 
 
