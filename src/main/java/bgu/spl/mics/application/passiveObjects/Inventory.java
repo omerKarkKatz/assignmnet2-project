@@ -98,5 +98,6 @@ public class Inventory {
 		MySerializable myInventorySerializable = new MySerializable(bookTitle_Amount_ToPrint, filename);
 		myInventorySerializable.serializeObjToFile();
         }
+
 	}
 

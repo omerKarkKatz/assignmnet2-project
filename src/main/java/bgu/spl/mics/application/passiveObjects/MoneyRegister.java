@@ -73,25 +73,7 @@ public class MoneyRegister {
      * This method is called by the main method in order to generate the output.. 
      */
 	public void printOrderReceipts(String filename) {
-
-		try {
-			FileOutputStream file = new FileOutputStream(filename);
-			ObjectOutputStream out = new ObjectOutputStream(file);
-
-			out.writeObject(ordersInMoneyRegister);
-
-			out.close();
-			file.close();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		// another option with Serialized class for generics.
-		/*
-		MySerializable serialOrdersInMoneyRegister = new MySerializable(ordersInMoneyRegister, filename);
-		serialOrdersInMoneyRegister.serializeObjToFile();
-		*/
-
+		MySerializable mySerializable = new MySerializable(ordersInMoneyRegister, filename);
+		mySerializable.serializeObjToFile();
 	}
 }
