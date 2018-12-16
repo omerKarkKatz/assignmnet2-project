@@ -91,8 +91,9 @@ public class BookStoreRunner {
                     Pair<String,Integer> title_tick = new Pair<>(currOrder.get("bookTitle").getAsString(), currOrder.get("tick").getAsInt());
                     orderSchedule.add(title_tick);
                 }
-                CustomerArray[i] = new Customer(id , name, address, distance, number, amount, orderSchedule);
 
+
+                 CustomerArray[i] = new Customer(id , name, address, distance, number, amount, orderSchedule);
 
             }
         } catch (FileNotFoundException e) {
