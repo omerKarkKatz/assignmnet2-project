@@ -40,7 +40,7 @@ public class SellingService extends MicroService{
 			if(price != -1){
 				OrderResult orderResult = null;
 				synchronized (customer.getMoneyLock()) {
-					if (customer.getAvailableCreditAmount() > price) {
+					if (customer.getAvailableCreditAmount() >= price) {
 						 orderResult = sendEvent(new TakeBookEvent(bookTitle)).get();
 						if (orderResult == OrderResult.SUCCESSFULLY_TAKEN)
 							moneyRegister.chargeCreditCard(customer, price);
