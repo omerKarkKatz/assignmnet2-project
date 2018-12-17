@@ -1,4 +1,5 @@
 package bgu.spl.mics.application.services;
+import bgu.spl.mics.Future;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.*;
 import bgu.spl.mics.application.passiveObjects.*;
@@ -35,21 +36,20 @@ public class SellingService extends MicroService{
 		subscribeEvent(BookOrderEvent.class , bookOrderEv -> {
 			Customer customer = bookOrderEv.getCustomer();
 			String bookTitle = bookOrderEv.getBookTitle();
-			Integer price = sendEvent(new CheckAvilabilityEvent(bookTitle)).get();
-			if(price != null & price != -1){
-				OrderResult orderResult = null;
-				synchronized (customer.getMoneyLock()) {
-					if (customer.getAvailableCreditAmount() >= price) {
-						 orderResult = sendEvent(new TakeBookEvent(bookTitle)).get();
-						if (orderResult == OrderResult.SUCCESSFULLY_TAKEN)
-							moneyRegister.chargeCreditCard(customer, price);
+			Future<Integer> price = sendEvent(new CheckAvilabilityEvent(bookTitle));
+			if(price != null && price.get() != -1) {
+				if (customer.getAvailableCreditAmount() >= price.get()) {
+					synchronized (customer.getMoneyLock()) {
+						Future<OrderResult> orderResult = sendEvent(new TakeBookEvent(bookTitle));
+						if (orderResult != null && orderResult.get() == OrderResult.SUCCESSFULLY_TAKEN) {
+							moneyRegister.chargeCreditCard(customer, price.get());
+
+							OrderReceipt orderReceipt = new OrderReceipt(1, getName(), customer.getId(), bookTitle, price.get(), currTick, bookOrderEv.getOrderTick(), currTick);
+							customer.getReceipts().add(orderReceipt);
+							moneyRegister.file(orderReceipt);
+							sendEvent(new DeliveryEvent(customer.getAddress(),customer.getDistance()));
+						}
 					}
-				}
-				if (orderResult == OrderResult.SUCCESSFULLY_TAKEN) {
-					OrderReceipt orderReceipt = new OrderReceipt(1, getName(), customer.getId(),
-										bookTitle, price, currTick, bookOrderEv.getOrderTick(), currTick);
-					customer.getReceipts().add(orderReceipt);
-					moneyRegister.file(orderReceipt);
 				}
 			}
 		});

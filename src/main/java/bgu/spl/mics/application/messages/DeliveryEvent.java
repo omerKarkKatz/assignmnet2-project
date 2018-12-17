@@ -6,7 +6,7 @@ public class DeliveryEvent implements Event {
     private int distance;
     private String address;
 
-    DeliveryEvent(String address, int distance) {
+    public DeliveryEvent(String address, int distance) {
         this.distance = distance;
         this.address = address;
     }

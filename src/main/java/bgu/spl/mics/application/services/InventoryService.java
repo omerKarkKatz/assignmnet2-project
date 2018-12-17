@@ -37,7 +37,7 @@ public class InventoryService extends MicroService{
 			bookTitle = checkAvilabilityEv.getBookTitle();
 			priceOrMinus1 = inventory.checkAvailabiltyAndGetPrice(bookTitle);
 			// resolves future with the price of the book if available
-			MessageBusImpl.getInstance().complete(checkAvilabilityEv, priceOrMinus1);
+			complete(checkAvilabilityEv, priceOrMinus1);
 		});
 
 		subscribeEvent(TakeBookEvent.class, takeBookEv ->
