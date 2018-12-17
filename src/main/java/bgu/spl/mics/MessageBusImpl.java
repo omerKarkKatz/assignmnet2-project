@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -97,6 +98,7 @@ public class MessageBusImpl implements MessageBus {
 		EventToFuture.putIfAbsent(e, futureEvent);
 		MicroService m = null;
 		if(eventsSubscribers.containsKey(e.getClass())) {
+			broadCastLock.readLock().lock();
 			synchronized (eventsSubscribers.get(e.getClass())) {
 				m = eventsSubscribers.get(e.getClass()).poll();
 				// checks if there is a micro service which can handle this.
@@ -109,6 +111,7 @@ public class MessageBusImpl implements MessageBus {
 
 				}
 			}
+			broadCastLock.readLock().unlock();
 		}
 		else{// meaning there is no eventType equals to e
 			futureEvent = null;
@@ -125,6 +128,7 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public void unregister(MicroService m) {
 		// check if clear is sync.
+		broadCastLock.writeLock().lock();
 		if (QueueOfMicroTasks.get(m).size()> 0){
 			for (Message message: QueueOfMicroTasks.get(m))
 				EventToFuture.get(message).resolve(null);
@@ -133,7 +137,7 @@ public class MessageBusImpl implements MessageBus {
 		QueueOfMicroTasks.get(m).clear();
 		QueueOfMicroTasks.remove(m);
 		if (messagesOfMicroToDelete.containsKey(m)) {
-			broadCastLock.writeLock().lock();
+
 			try {
 				for (Class<? extends Message> messageIter : messagesOfMicroToDelete.get(m)) {
 					if (eventsSubscribers.containsKey(messageIter))
