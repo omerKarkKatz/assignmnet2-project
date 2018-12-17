@@ -22,6 +22,10 @@ public class JasonReader {
     private static int inventoryService;
     private static int logistics;
     private static int resourcesService;
+    private static int speed;
+    private static int duration;
+
+
     private static Customer[] CustomerArray;
 
     public JasonReader(){};
@@ -53,6 +57,10 @@ public class JasonReader {
     public Customer[] getCustomerArray() {
         return CustomerArray;
     }
+
+    public int getSpeed() { return speed; }
+
+    public int getDuration() { return duration; }
 
     public void ParseJson(String Path) {
         Gson gson = new Gson();
@@ -90,6 +98,10 @@ public class JasonReader {
             }
 
             JsonObject services = jsonObject.getAsJsonObject("services");
+            JsonObject time = services.getAsJsonObject("time");
+            speed = time.get("speed").getAsInt();
+            duration = time.get("duration").getAsInt();
+            System.out.println(speed + " " + duration);
             selling = services.get("selling").getAsInt();
             inventoryService = services.get("inventoryService").getAsInt();
             logistics = services.get("logistics").getAsInt();
