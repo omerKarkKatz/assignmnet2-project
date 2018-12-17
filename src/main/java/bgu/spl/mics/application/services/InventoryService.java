@@ -27,12 +27,13 @@ public class InventoryService extends MicroService{
 	private CountDownLatch countDownLatch;
 
 	public InventoryService(int id, CountDownLatch countDownLatch) {
-		super("InventoryService" + id);
+		super("InventoryService " + id);
 		this.countDownLatch = countDownLatch;
 	}
 
 	@Override
 	protected void initialize() {
+		System.out.println("strted: " + this.getName());
 		subscribeEvent(CheckAvilabilityEvent.class, checkAvilabilityEv -> {
 			bookTitle = checkAvilabilityEv.getBookTitle();
 			priceOrMinus1 = inventory.checkAvailabiltyAndGetPrice(bookTitle);

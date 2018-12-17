@@ -31,6 +31,7 @@ public class SellingService extends MicroService{
 	@Override
 	protected void initialize() {
 		// sets the curr Tick.
+		System.out.println("strted: " + this.getName());
 		subscribeBroadcast(TickBroadcast.class, tickEv -> currTick = tickEv.getCurrTick());
 
 		subscribeEvent(BookOrderEvent.class , bookOrderEv -> {

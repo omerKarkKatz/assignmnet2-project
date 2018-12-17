@@ -31,7 +31,7 @@ public class APIService extends MicroService {
 	//TODO: think where are we sapoused to recive the orderRecite or null.
 
 	public APIService(int id, CountDownLatch countDownLatch,  Customer customer) {
-		super("APIService" + id);
+		super("APIService " + id);
 		this.countDownLatch = countDownLatch;
 		this.customer = customer;
 		this.bookToOrderInCurrTick = ConstructHashMap(customer.getOrderSchedule());
@@ -40,6 +40,7 @@ public class APIService extends MicroService {
 
 	@Override
 	protected void initialize() {
+		System.out.println("strted: " + this.getName());
 		this.subscribeBroadcast(TickBroadcast.class, tickBrod -> {
 			currentTick.set(tickBrod.getCurrTick());
 			if (bookToOrderInCurrTick.containsKey(currentTick)) {

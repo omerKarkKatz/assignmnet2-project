@@ -37,8 +37,9 @@ public class TimeService extends MicroService {
         @Override
         public void run() {
             if (duration > passedTickes.get()) {
-                passedTickes.incrementAndGet();
+                System.out.println(passedTickes.get());
                 sendBroadcast(new TickBroadcast(passedTickes.get()));
+                passedTickes.incrementAndGet();
             } else {
                 sendBroadcast(new TerminationBroadcast());
                 timer.cancel();
@@ -49,6 +50,7 @@ public class TimeService extends MicroService {
 
     @Override
     protected void initialize() {
+        System.out.println("strted: " + this.getName());
         timer.scheduleAtFixedRate(timerTask, 0, speed);
         terminate();
     }

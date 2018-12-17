@@ -11,7 +11,7 @@ public class Services {
 
 
     // Todo :: check witch field to add for the print methods;
-    private int time;
+    private int speed;
     private int duration;
     private int selling;
     private int inventoryService;
@@ -23,8 +23,8 @@ public class Services {
     private LinkedList<MicroService> services;
     private LinkedList<Thread> threads;
 
-    public Services(int time, int duration, int selling, int inventoryService, int logistics, int resourcesService, Customer[] customers) {
-        this.time = time;
+    public Services(int speed, int duration, int selling, int inventoryService, int logistics, int resourcesService, Customer[] customers) {
+        this.speed = speed;
         this.duration = duration;
         this.selling = selling;
         this.inventoryService = inventoryService;
@@ -38,31 +38,31 @@ public class Services {
     }
 
     public void initialServices() {
-        for (int i = 1; i < selling; i++) {
+        for (int i = 1; i <= selling; i++) {
             services.add(new SellingService(i, countDownLatch));
         }
 
-        for (int i = 1; i < inventoryService; i++) {
+        for (int i = 1; i <= inventoryService; i++) {
             services.add(new InventoryService(i, countDownLatch));
         }
 
-        for (int i = 1; i < logistics; i++) {
+        for (int i = 1; i <= logistics; i++) {
             services.add(new LogisticsService(i, countDownLatch));
         }
 
-        for (int i = 1; i < resourcesService; i++) {
+        for (int i = 1; i <= resourcesService; i++) {
             services.add(new ResourceService(i, countDownLatch));
         }
 
-        for (int i = 1; i < customers.length; i++) {
-            services.add(new APIService(i, countDownLatch, customers[i]));
+        for (int i = 1; i <= customers.length; i++) {
+            services.add(new APIService(i, countDownLatch, customers[i-1]));
         }
 
         services.forEach(service->threads.add(new Thread(service)));
 
         threads.forEach(Thread::start);
 
-        Thread timeThread = new Thread(new TimeService(time, duration));
+        Thread timeThread = new Thread(new TimeService(speed, duration));
         try {
             countDownLatch.await();
         } catch (InterruptedException e) {
