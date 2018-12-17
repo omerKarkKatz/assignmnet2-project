@@ -105,9 +105,8 @@ public class MessageBusImpl implements MessageBus {
 					// moves the micro to the end of the queue (round robin manner), adds message to the microMessageQueue.
 				else {
 					eventsSubscribers.get(e.getClass()).add(m);
-					synchronized (lockSendTask) {
-						QueueOfMicroTasks.get(m).add(e);
-					}
+					QueueOfMicroTasks.get(m).add(e);
+
 				}
 			}
 		}

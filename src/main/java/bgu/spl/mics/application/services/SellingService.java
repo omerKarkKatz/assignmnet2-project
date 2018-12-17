@@ -38,8 +38,8 @@ public class SellingService extends MicroService{
 			String bookTitle = bookOrderEv.getBookTitle();
 			Future<Integer> price = sendEvent(new CheckAvilabilityEvent(bookTitle));
 			if(price != null && price.get() != -1) {
+				synchronized (customer.getMoneyLock()) {
 				if (customer.getAvailableCreditAmount() >= price.get()) {
-					synchronized (customer.getMoneyLock()) {
 						Future<OrderResult> orderResult = sendEvent(new TakeBookEvent(bookTitle));
 						if (orderResult != null && orderResult.get() == OrderResult.SUCCESSFULLY_TAKEN) {
 							moneyRegister.chargeCreditCard(customer, price.get());
