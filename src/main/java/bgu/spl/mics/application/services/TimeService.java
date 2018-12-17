@@ -36,7 +36,7 @@ public class TimeService extends MicroService {
     TimerTask timerTask = new TimerTask() {
         @Override
         public void run() {
-            if (duration > passedTickes.get()) {
+            if (duration >= passedTickes.get()) {
                 System.out.println(passedTickes.get());
                 sendBroadcast(new TickBroadcast(passedTickes.get()));
                 passedTickes.incrementAndGet();

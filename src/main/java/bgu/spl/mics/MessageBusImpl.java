@@ -25,7 +25,7 @@ public class MessageBusImpl implements MessageBus {
 	private ConcurrentHashMap<Event, Future> EventToFuture;
 	private ConcurrentHashMap<MicroService, Vector<Class<? extends Message>>> messagesOfMicroToDelete;
 	private Object lockSendTask;
-	private ReadWriteLock broadCastLock;
+	private ReentrantReadWriteLock broadCastLock;
 
 	private MessageBusImpl(){
 		QueueOfMicroTasks = new ConcurrentHashMap<>();
@@ -137,18 +137,14 @@ public class MessageBusImpl implements MessageBus {
 		QueueOfMicroTasks.get(m).clear();
 		QueueOfMicroTasks.remove(m);
 		if (messagesOfMicroToDelete.containsKey(m)) {
-
-			try {
 				for (Class<? extends Message> messageIter : messagesOfMicroToDelete.get(m)) {
 					if (eventsSubscribers.containsKey(messageIter))
 						eventsSubscribers.get(messageIter).remove(m);
 					else
 						broadcastSubscribers.get(messageIter).remove(m);
 				}
-			}finally {
-				broadCastLock.writeLock().unlock();
-			}
 		}
+		broadCastLock.writeLock().unlock();
 		m.terminate();
 	}
 
