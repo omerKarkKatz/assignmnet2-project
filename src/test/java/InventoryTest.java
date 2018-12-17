@@ -22,7 +22,7 @@ public class InventoryTest {
     public void setUp() throws Exception {
         books = new BookInventoryInfo[10];
         for (int i = 0; i < books.length; i++) {
-            books[i] = new BookInventoryInfo("book " + i ,i%6,i*8);
+            books[i] = new BookInventoryInfo("book " + i ,(i%6)+1,i*8);
         }
 
     }
@@ -50,7 +50,7 @@ public class InventoryTest {
         inventory.load(books);
         for (int i = 0; i < books.length; i++) {
             String bookName = books[i].getBookTitle();
-            assertEquals("book wasn't loaded", OrderResult.valueOf(bookName),(inventory.take(bookName).name()));
+            assertEquals("book wasn't loaded", OrderResult.SUCCESSFULLY_TAKEN,(inventory.take(bookName)));
 
         }
     }

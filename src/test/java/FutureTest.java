@@ -41,7 +41,7 @@ public class FutureTest {
         assertNull(future.get(0, TimeUnit.MILLISECONDS));
         assertNull(future.get(100,TimeUnit.MILLISECONDS));
         future.resolve(result);
-        assertNull(future.get(0,TimeUnit.MILLISECONDS));
+        assertNotNull(future.get(0,TimeUnit.MILLISECONDS));
         //check if setting finite time is legitimate.
         //assertEquals(result,future.get(100,TimeUnit.MILLISECONDS));
     }

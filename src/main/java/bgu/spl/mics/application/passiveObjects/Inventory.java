@@ -25,6 +25,10 @@ public class Inventory {
 
     }
 
+    private Inventory(){
+            bookStock = new ConcurrentHashMap<>();
+    }
+
     private ConcurrentHashMap<String, BookInventoryInfo> bookStock;
 
     /**
@@ -59,16 +63,17 @@ public class Inventory {
      * second should reduce by one the number of books of the desired type.
      */
     public OrderResult take(String book) {
-        synchronized (bookStock.get(book)) {
+
             if (bookStock.containsKey(book)) {
-                if (bookStock.get(book).getAmountInInventory() > 0) {
-                    bookStock.get(book).reduceAmount();
-                    return OrderResult.SUCCESSFULLY_TAKEN;
-                } else
-                    return OrderResult.NOT_IN_STOCK;
+                synchronized (bookStock.get(book)) {
+                    if (bookStock.get(book).getAmountInInventory() > 0) {
+                        bookStock.get(book).reduceAmount();
+                        return OrderResult.SUCCESSFULLY_TAKEN;
+                    } else
+                        return OrderResult.NOT_IN_STOCK;
+                }
             }
-            return OrderResult.NOT_IN_STOCK;
-        }
+                return OrderResult.NOT_IN_STOCK;
     }
 
 
