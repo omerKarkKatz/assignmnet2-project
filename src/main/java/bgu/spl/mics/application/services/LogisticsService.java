@@ -1,5 +1,6 @@
 package bgu.spl.mics.application.services;
 
+import bgu.spl.mics.Future;
 import bgu.spl.mics.Message;
 import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
@@ -35,12 +36,14 @@ public class LogisticsService extends MicroService {
 	@Override
 	protected void initialize() {
 		AcquireVehicleEvent AV = new AcquireVehicleEvent();
-
-
-		subscribeEvent(DeliveryEvent.class, Deliver ->{
-			DeliveryVehicle deliveryVehicle = sendEvent(AV).get().get();
-			if (deliveryVehicle != null)
-			deliveryVehicle.deliver(Deliver.getAddress(),Deliver.getDistance());
+		subscribeEvent(DeliveryEvent.class, deliver ->{
+			Future<Future<DeliveryVehicle>> f=sendEvent(AV);
+			if(f==null || f.get()==null || f.get().get()==null){
+				complete(deliver,null);
+				return;
+			}
+			DeliveryVehicle deliveryVehicle = f.get().get();
+			deliveryVehicle.deliver(deliver.getAddress(),deliver.getDistance());
 
 			ReleaceVehicleEvent RV = new ReleaceVehicleEvent(deliveryVehicle);
 			sendEvent(RV);

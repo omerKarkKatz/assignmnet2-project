@@ -63,11 +63,15 @@ public class ResourcesHolder {
      * @param vehicle	{@link DeliveryVehicle} to be released.
      */
 	public void releaseVehicle(DeliveryVehicle vehicle) {
-	    if (deliveryVehicleFutureQueue.size()> 0)
-	        deliveryVehicleFutureQueue.poll().resolve(vehicle);
-	          else
-                deliveryVehicleQueue.add(vehicle);
-        }
+		if (vehicle == null)
+			resovleAll();
+		else {
+			if (deliveryVehicleFutureQueue.size() > 0)
+				deliveryVehicleFutureQueue.poll().resolve(vehicle);
+			else
+				deliveryVehicleQueue.add(vehicle);
+		}
+	}
 
 	
 	/**
@@ -79,5 +83,8 @@ public class ResourcesHolder {
 	    for (DeliveryVehicle vehicle: vehicles)
 	        deliveryVehicleQueue.add(vehicle);
 	}
-
+	private void resovleAll(){
+		for (int i=0; i < deliveryVehicleFutureQueue.size(); i++)
+		deliveryVehicleFutureQueue.poll().resolve(null);
+	}
 }
