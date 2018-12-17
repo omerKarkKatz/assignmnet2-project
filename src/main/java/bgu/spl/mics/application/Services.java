@@ -33,6 +33,8 @@ public class Services {
         this.customers = customers;
         numOfServices = selling + inventoryService + logistics + resourcesService;
         countDownLatch = new CountDownLatch(numOfServices);
+        services = new LinkedList<>();
+        threads = new LinkedList<>();
     }
 
     public void initialServices() {

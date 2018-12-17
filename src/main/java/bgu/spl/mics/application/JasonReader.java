@@ -101,7 +101,6 @@ public class JasonReader {
             JsonObject time = services.getAsJsonObject("time");
             speed = time.get("speed").getAsInt();
             duration = time.get("duration").getAsInt();
-            System.out.println(speed + " " + duration);
             selling = services.get("selling").getAsInt();
             inventoryService = services.get("inventoryService").getAsInt();
             logistics = services.get("logistics").getAsInt();

@@ -85,6 +85,6 @@ public class ResourcesHolder {
 	}
 	private void resovleAll(){
 		for (int i=0; i < deliveryVehicleFutureQueue.size(); i++)
-		deliveryVehicleFutureQueue.poll().resolve(null);
+			deliveryVehicleFutureQueue.poll().resolve(null);
 	}
 }
