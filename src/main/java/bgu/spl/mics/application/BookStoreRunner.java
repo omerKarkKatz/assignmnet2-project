@@ -8,6 +8,7 @@ import javax.sql.rowset.Joinable;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Timer;
 
 /**
  * This is the Main class of the application. You should parse the input file,
@@ -19,6 +20,7 @@ import java.util.LinkedList;
 public class BookStoreRunner {
 
     public static void main(String[] args) {
+
         try {
             JasonReader jasonReader = new JasonReader();
             jasonReader.ParseJson(args[0]);
@@ -31,10 +33,10 @@ public class BookStoreRunner {
 
             MoneyRegister moneyRegister = MoneyRegister.getInstance();
 
-            Services services = new Services(jasonReader.getSelling(), jasonReader.getInventoryService(), jasonReader.getLogistics(),
-                    jasonReader.getResourcesService(), jasonReader.getCustomerArray());
+            Services services = new Services(jasonReader.getSpeed(), jasonReader.getDuration(), jasonReader.getSelling(),
+                                                jasonReader.getInventoryService(), jasonReader.getLogistics(),
+                                                     jasonReader.getResourcesService(), jasonReader.getCustomerArray());
             services.initialServices();
-
 
             LinkedList<Thread> threads = services.getThreads();
             for (Thread thread : threads) {
@@ -43,7 +45,9 @@ public class BookStoreRunner {
 
             PrintToOutPutFiles(jasonReader.getCustomerArray(),inventory, moneyRegister, args[1], args[2], args[3], args[4]);
         } catch (IllegalArgumentException | InterruptedException ie) {}
+
     }
+
     //the first file is the output file for the customers HashMap the second is for the books HashMap object,
     //the third is for the list of order receipts,and the fourth is for the MoneyRegister object
     private static void PrintToOutPutFiles(Customer[] customers,Inventory inventory, MoneyRegister moneyRegister, String path1, String path2, String path3, String path4) {

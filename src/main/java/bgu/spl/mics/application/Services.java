@@ -11,7 +11,8 @@ public class Services {
 
 
     // Todo :: check witch field to add for the print methods;
-    private TimeService time;
+    private int time;
+    private int duration;
     private int selling;
     private int inventoryService;
     private int logistics;
@@ -22,7 +23,9 @@ public class Services {
     private LinkedList<MicroService> services;
     private LinkedList<Thread> threads;
 
-    public Services(int selling, int inventoryService, int logistics, int resourcesService, Customer[] customers) {
+    public Services(int time, int duration, int selling, int inventoryService, int logistics, int resourcesService, Customer[] customers) {
+        this.time = time;
+        this.duration = duration;
         this.selling = selling;
         this.inventoryService = inventoryService;
         this.logistics = logistics;
@@ -54,7 +57,16 @@ public class Services {
         }
 
         services.forEach(service->threads.add(new Thread(service)));
+
         threads.forEach(Thread::start);
+
+        Thread timeThread = new Thread(new TimeService(time, duration));
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            System.out.println("Not all services intalized");
+        }
+        timeThread.start();
     }
 
     public LinkedList<MicroService> getMicroServices() {

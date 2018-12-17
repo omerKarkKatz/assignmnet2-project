@@ -50,6 +50,7 @@ public class SellingService extends MicroService{
 										bookTitle, price, currTick, bookOrderEv.getOrderTick(), currTick);
 					customer.getReceipts().add(orderReceipt);
 					moneyRegister.file(orderReceipt);
+					sendEvent(new DeliveryEvent(customer.getAddress(), customer.getDistance()));
 				}
 			}
 		});

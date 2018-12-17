@@ -6,17 +6,17 @@ import java.io.ObjectOutputStream;
 
 public class MySerializable {
 
-    Object objecttoSerialize;
+    Object objectToSerialize;
     String filename;
 
     public MySerializable(Object obj, String fileName) {
-        this.objecttoSerialize = obj;
+        this.objectToSerialize = obj;
         this.filename = fileName;
     }
 
     public void serializeObjToFile() {
         try (FileOutputStream file = new FileOutputStream(filename) ; ObjectOutputStream out = new ObjectOutputStream(file)) {
-            out.writeObject(objecttoSerialize);
+            out.writeObject(objectToSerialize);
         } catch (
                 IOException e) {
             e.printStackTrace();
