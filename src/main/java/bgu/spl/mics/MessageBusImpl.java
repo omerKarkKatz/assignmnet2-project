@@ -1,5 +1,6 @@
 package bgu.spl.mics;
 
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
@@ -81,14 +82,16 @@ public class MessageBusImpl implements MessageBus {
 			System.out.println("noo handler for this Broadcast");
 		}
 		else{
+			broadCastLock.readLock().lock();
 			iter = tmp1.iterator();
 
 			try {
 				while (iter.hasNext())
 					QueueOfMicroTasks.get(iter.next()).add(b);
-			}finally {
-
+			}catch(ConcurrentModificationException e){
+				throw new ConcurrentModificationException("problem in send broad cast");
 			}
+			broadCastLock.readLock().unlock();
 		}
 	}
 

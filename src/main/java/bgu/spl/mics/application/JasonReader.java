@@ -106,11 +106,12 @@ public class JasonReader {
             logistics = services.get("logistics").getAsInt();
             resourcesService = services.get("resourcesService").getAsInt();
 
-            JsonArray customesJsonArray = services.getAsJsonArray("customers");
-            CustomerArray = new Customer[customesJsonArray.size()];
 
-            for (int i = 0; i < customesJsonArray.size(); i++) {
-                JsonObject currCustomer = customesJsonArray.get(i).getAsJsonObject();
+            JsonArray customersJsonArray = services.getAsJsonArray("customers");
+            CustomerArray = new Customer[customersJsonArray.size()];
+
+            for (int i = 0; i < customersJsonArray.size(); i++) {
+                JsonObject currCustomer = customersJsonArray.get(i).getAsJsonObject();
                 // gets all the info on this customer
                 int id = currCustomer.get("id").getAsInt();
                 String name = currCustomer.get("name").getAsString();

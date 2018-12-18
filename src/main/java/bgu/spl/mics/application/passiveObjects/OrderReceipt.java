@@ -24,7 +24,7 @@ public class OrderReceipt implements Serializable {
 		this.orderId = orderId;
 		this.seller = seller;
 		this.customer = customer;
-		this.BookTitle = BookTitle;
+		this.BookTitle = bookTitle;
 		this.price = price;
 		this.issuedTick = issuedTick;
 		this.orderTick = orderTick;

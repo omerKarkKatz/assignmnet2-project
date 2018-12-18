@@ -54,7 +54,7 @@ public class APIService extends MicroService {
 		countDownLatch.countDown();
 	}
 
-	private ConcurrentHashMap<Integer,Vector<String>> ConstructHashMap(List<Pair<String, Integer>> bookTick) {
+	private ConcurrentHashMap<Integer,Vector<String>> ConstructHashMap(Vector<Pair<String, Integer>> bookTick) {
 		ConcurrentHashMap<Integer,Vector<String>> OrderByTick = new ConcurrentHashMap<Integer, Vector<String>>();
 		for (Pair<String, Integer> pair : bookTick) {
 			OrderByTick.putIfAbsent(pair.getValue(),new Vector<String>());

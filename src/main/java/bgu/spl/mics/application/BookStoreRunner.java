@@ -5,7 +5,9 @@ import bgu.spl.mics.application.passiveObjects.*;
 
 import javax.imageio.IIOException;
 import javax.sql.rowset.Joinable;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Timer;
@@ -51,18 +53,35 @@ public class BookStoreRunner {
     //the first file is the output file for the customers HashMap the second is for the books HashMap object,
     //the third is for the list of order receipts,and the fourth is for the MoneyRegister object
     private static void PrintToOutPutFiles(Customer[] customers,Inventory inventory, MoneyRegister moneyRegister, String path1, String path2, String path3, String path4) {
-        HashMap<Integer,Customer> customerHashMap=new HashMap<>();
-        for(Customer customer : customers)
-            customerHashMap.put(customer.getId(),customer);
-        MySerializable ser_customers=new MySerializable(customerHashMap,path1);
-        ser_customers.serializeObjToFile();
+        HashMap<Integer, Customer> customerHashMap = new HashMap<>();
+        for (Customer customer : customers)
+            customerHashMap.put(customer.getId(), customer);
+        //-------create output files
+        try {
+            print(path1, customerHashMap);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Can't create file, customers");
+        }
         try {
             inventory.printInventoryToFile(path2);
-        } catch (IOException e) {}
-        moneyRegister.printOrderReceipts(path3);
-
-        MySerializable ser_moneyRegister = new MySerializable(MoneyRegister.getInstance(),path4);
-        ser_moneyRegister.serializeObjToFile();
+            moneyRegister.printOrderReceipts(path3);
+        } catch (IOException e) {
+        }
+        try {
+            print(path4, MoneyRegister.getInstance());
+        } catch (Exception e) {
+        }
+    }
+        private static void print(String path, Object toPrint){
+            FileOutputStream fileOutputStream;
+            try {
+            fileOutputStream = new FileOutputStream(path);
+                ObjectOutputStream OutPutfile = new ObjectOutputStream(fileOutputStream);
+                OutPutfile.writeObject(toPrint);
+                OutPutfile.close();
+                fileOutputStream.close();
+            }
+            catch (IOException e){ throw new IllegalArgumentException("Can't create file, customers");}
+        }
     }
 
-}

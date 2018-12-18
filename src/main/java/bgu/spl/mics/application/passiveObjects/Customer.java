@@ -3,6 +3,7 @@ package bgu.spl.mics.application.passiveObjects;
 import javafx.util.Pair;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
@@ -22,11 +23,11 @@ public class Customer implements Serializable {
 	private int creditCardNumber;
 	private int availableAmountInCreditCard;
 	private final transient Object moneyLock = new Object();
-	private List<Pair<String,Integer>> OrderSchedule;
+	private Vector<Pair<String,Integer>> OrderSchedule;
 
 
 
-	public Customer(int id, String name, String address, int distance, int creditCardNumber, int availableAmountInCreditCard, List<Pair<String, Integer>> orderSchedule){
+	public Customer(int id, String name, String address, int distance, int creditCardNumber, int availableAmountInCreditCard, Vector<Pair<String,Integer>> orderSchedule){
 		this.id = id;
 		this.name = name;
 		this.address = address;
@@ -64,14 +65,14 @@ public class Customer implements Serializable {
 		return distance;
 	}
 
-	
+
 	/**
      * Retrieves a list of receipts for the purchases this customer has made.
      * <p>
      * @return A list of receipts.
      */
-	public List<OrderReceipt> getCustomerReceiptList() {
-		return receipts;
+	public Vector<Pair<String,Integer>> getOrderSchedule() {
+		return OrderSchedule;
 	}
 	
 	/**
@@ -94,15 +95,11 @@ public class Customer implements Serializable {
 		this.availableAmountInCreditCard = availableAmountInCreditCard;
 	}
 
-	public Vector getReceipts() {
+	public Vector getCustomerReceiptList() {
 		return receipts;
 	}
 
 	public Object getMoneyLock() {
 		return moneyLock;
-	}
-
-	public List<Pair<String, Integer>> getOrderSchedule() {
-		return OrderSchedule;
 	}
 }

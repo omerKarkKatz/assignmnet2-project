@@ -3,7 +3,10 @@ package bgu.spl.mics.application.passiveObjects;
 
 import bgu.spl.mics.MySerializable;
 
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -75,8 +78,6 @@ public class Inventory {
             }
                 return OrderResult.NOT_IN_STOCK;
     }
-
-
     /**
      * Checks if a certain book is available in the inventory.
      * <p>
@@ -102,9 +103,13 @@ public class Inventory {
         for (String str : bookStock.keySet()) {
             bookTitle_Amount_ToPrint.put(str, bookStock.get(str).getAmountInInventory());
         }
-        MySerializable myInventorySerializable = new MySerializable(bookTitle_Amount_ToPrint, filename);
-        myInventorySerializable.serializeObjToFile();
+       // MySerializable myInventorySerializable = new MySerializable(bookTitle_Amount_ToPrint, filename);
+        // myInventorySerializable.serializeObjToFile();
+        FileOutputStream OutPutFile = new FileOutputStream(filename);
+        ObjectOutputStream SreamOutPut = new ObjectOutputStream(OutPutFile);
+        SreamOutPut.writeObject(bookTitle_Amount_ToPrint);
+        SreamOutPut.close();
+        OutPutFile.close();
     }
-
 }
 
