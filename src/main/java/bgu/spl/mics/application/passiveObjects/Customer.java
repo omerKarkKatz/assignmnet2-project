@@ -80,7 +80,7 @@ public class Customer implements Serializable {
      * @return Amount of money left.   
      */
 	public int getAvailableCreditAmount() {
-		return getAvailableCreditAmount();
+		return availableAmountInCreditCard;
 	}
 	
 	/**

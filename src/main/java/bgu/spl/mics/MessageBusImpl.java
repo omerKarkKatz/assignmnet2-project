@@ -82,12 +82,12 @@ public class MessageBusImpl implements MessageBus {
 		}
 		else{
 			iter = tmp1.iterator();
-			broadCastLock.readLock().lock();
+
 			try {
 				while (iter.hasNext())
 					QueueOfMicroTasks.get(iter.next()).add(b);
 			}finally {
-				broadCastLock.readLock().unlock();
+
 			}
 		}
 	}
@@ -145,7 +145,7 @@ public class MessageBusImpl implements MessageBus {
 				}
 		}
 		broadCastLock.writeLock().unlock();
-		m.terminate();
+		System.out.println("Micro Service "+m.getName()+" unregistered");
 	}
 
 	@Override

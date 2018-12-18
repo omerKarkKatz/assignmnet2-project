@@ -40,11 +40,11 @@ public class APIService extends MicroService {
 
 	@Override
 	protected void initialize() {
-		System.out.println("strted: " + this.getName());
+		System.out.println("started: " + this.getName());
 		this.subscribeBroadcast(TickBroadcast.class, tickBrod -> {
 			currentTick.set(tickBrod.getCurrTick());
-			if (bookToOrderInCurrTick.containsKey(currentTick)) {
-				List<String> orderNow = bookToOrderInCurrTick.get(currentTick);
+			if (bookToOrderInCurrTick.containsKey(currentTick.get())) {
+				List<String> orderNow = bookToOrderInCurrTick.get(currentTick.get());
 				for (String bookTitle : orderNow) {
 					sendEvent(new BookOrderEvent(customer, bookTitle, currentTick.get()));
 				}

@@ -61,7 +61,7 @@ public class BookStoreRunner {
         } catch (IOException e) {}
         moneyRegister.printOrderReceipts(path3);
 
-        MySerializable ser_moneyRegister=new MySerializable(MoneyRegister.getInstance(),path4);
+        MySerializable ser_moneyRegister = new MySerializable(MoneyRegister.getInstance(),path4);
         ser_moneyRegister.serializeObjToFile();
     }
 

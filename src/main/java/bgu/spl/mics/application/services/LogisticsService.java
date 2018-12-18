@@ -13,6 +13,7 @@ import bgu.spl.mics.application.passiveObjects.Inventory;
 import bgu.spl.mics.application.passiveObjects.MoneyRegister;
 import bgu.spl.mics.application.passiveObjects.ResourcesHolder;
 
+import java.sql.SQLOutput;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -45,6 +46,7 @@ public class LogisticsService extends MicroService {
 			}
 			DeliveryVehicle deliveryVehicle = f.get().get();
 			deliveryVehicle.deliver(deliver.getAddress(),deliver.getDistance());
+			System.out.println("sending book");
 
 			ReleaceVehicleEvent RV = new ReleaceVehicleEvent(deliveryVehicle);
 			sendEvent(RV);

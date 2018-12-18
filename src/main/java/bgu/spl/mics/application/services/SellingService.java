@@ -31,18 +31,23 @@ public class SellingService extends MicroService{
 	@Override
 	protected void initialize() {
 		// sets the curr Tick.
-		System.out.println("strted: " + this.getName());
+		System.out.println("started: " + this.getName());
 		subscribeBroadcast(TickBroadcast.class, tickEv -> currTick = tickEv.getCurrTick());
 
 		subscribeEvent(BookOrderEvent.class , bookOrderEv -> {
 			Customer customer = bookOrderEv.getCustomer();
 			String bookTitle = bookOrderEv.getBookTitle();
 			Future<Integer> price = sendEvent(new CheckAvilabilityEvent(bookTitle));
+			System.out.println("checking availability of book "+bookTitle);
 			if(price != null && price.get() != -1) {
 				synchronized (customer.getMoneyLock()) {
+					System.out.println("customer money "+customer.getAvailableCreditAmount());
+					System.out.println("book price "+price.get());
 				if (customer.getAvailableCreditAmount() >= price.get()) {
+					System.out.println("enough money for buying the book");
 						Future<OrderResult> orderResult = sendEvent(new TakeBookEvent(bookTitle));
 						if (orderResult != null && orderResult.get() == OrderResult.SUCCESSFULLY_TAKEN) {
+							System.out.println("acquisition succeeded");
 							moneyRegister.chargeCreditCard(customer, price.get());
 
 							OrderReceipt orderReceipt = new OrderReceipt(1, getName(), customer.getId(), bookTitle, price.get(), currTick, bookOrderEv.getOrderTick(), currTick);
@@ -50,6 +55,8 @@ public class SellingService extends MicroService{
 							moneyRegister.file(orderReceipt);
 							sendEvent(new DeliveryEvent(customer.getAddress(),customer.getDistance()));
 						}
+						else
+					System.out.println("book is not in stock");
 					}
 				}
 			}
