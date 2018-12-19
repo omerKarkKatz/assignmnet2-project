@@ -71,7 +71,7 @@ public class Customer implements Serializable {
      * <p>
      * @return A list of receipts.
      */
-	public Vector<Pair<String,Integer>> getOrderSchedule() {
+	public List<Pair<String,Integer>> getOrderSchedule() {
 		return OrderSchedule;
 	}
 	
