@@ -95,7 +95,7 @@ public class Customer implements Serializable {
 		this.availableAmountInCreditCard = availableAmountInCreditCard;
 	}
 
-	public Vector getCustomerReceiptList() {
+	public List getCustomerReceiptList() {
 		return receipts;
 	}
 
