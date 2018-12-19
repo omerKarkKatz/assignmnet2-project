@@ -53,6 +53,7 @@ public class SellingService extends MicroService{
 							OrderReceipt orderReceipt = new OrderReceipt(1, getName(), customer.getId(), bookTitle, price.get(), currTick, bookOrderEv.getOrderTick(), currTick);
 							customer.getCustomerReceiptList().add(orderReceipt);
 							moneyRegister.file(orderReceipt);
+							System.out.println("issuing receipt of "+bookTitle);
 							sendEvent(new DeliveryEvent(customer.getAddress(),customer.getDistance()));
 						}
 						else

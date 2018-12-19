@@ -111,5 +111,8 @@ public class Inventory {
         SreamOutPut.close();
         OutPutFile.close();
     }
+    public ConcurrentHashMap<String,BookInventoryInfo> getbooks(){
+        return bookStock;
+    }
 }
 

@@ -37,8 +37,7 @@ public class ResourceService extends MicroService{
 		subscribeEvent(AcquireVehicleEvent.class, getVehicleEv -> this.complete(getVehicleEv,resourceHolderInstance.acquireVehicle()));
 		subscribeEvent(ReleaceVehicleEvent.class, vehicleEv -> resourceHolderInstance.releaseVehicle(vehicleEv.getVehicle()));
 		subscribeBroadcast(TerminationBroadcast.class, closingStore ->{resourceHolderInstance.releaseVehicle(null);
-		terminate();
-	});
+		terminate();});
 		countDownLatch.countDown();
 	}
 

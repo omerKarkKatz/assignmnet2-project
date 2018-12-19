@@ -6,6 +6,7 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -27,6 +28,7 @@ public class MessageBusImpl implements MessageBus {
 	private ConcurrentHashMap<MicroService, Vector<Class<? extends Message>>> messagesOfMicroToDelete;
 	private Object lockSendTask;
 	private ReentrantReadWriteLock broadCastLock;
+	private AtomicInteger number;
 
 	private MessageBusImpl(){
 		QueueOfMicroTasks = new ConcurrentHashMap<>();
@@ -36,6 +38,7 @@ public class MessageBusImpl implements MessageBus {
 		messagesOfMicroToDelete = new ConcurrentHashMap<>();
 		lockSendTask = new Object();
 		broadCastLock = new ReentrantReadWriteLock(true);
+		number = new AtomicInteger(1);
 
 	}
 
@@ -105,8 +108,10 @@ public class MessageBusImpl implements MessageBus {
 			synchronized (eventsSubscribers.get(e.getClass())) {
 				m = eventsSubscribers.get(e.getClass()).poll();
 				// checks if there is a micro service which can handle this.
-				if (m == null)
+				if (m == null) {
+					broadCastLock.readLock().unlock();
 					return null;
+				}
 					// moves the micro to the end of the queue (round robin manner), adds message to the microMessageQueue.
 				else {
 					eventsSubscribers.get(e.getClass()).add(m);
@@ -148,7 +153,9 @@ public class MessageBusImpl implements MessageBus {
 				}
 		}
 		broadCastLock.writeLock().unlock();
-		System.out.println("Micro Service "+m.getName()+" unregistered");
+		System.out.println(number+" Micro Service "+m.getName()+" unregistered");
+		int compare = number.get();
+		number.incrementAndGet();
 	}
 
 	@Override

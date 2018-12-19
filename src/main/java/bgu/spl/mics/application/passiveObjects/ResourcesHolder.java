@@ -84,7 +84,8 @@ public class ResourcesHolder {
 	        deliveryVehicleQueue.add(vehicle);
 	}
 	private void resovleAll(){
-		for (int i=0; i < deliveryVehicleFutureQueue.size(); i++)
+		int size = deliveryVehicleFutureQueue.size();
+		for (int i = 0; i < size ; i++)
 			deliveryVehicleFutureQueue.poll().resolve(null);
 	}
 }

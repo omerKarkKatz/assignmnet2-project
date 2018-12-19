@@ -2,6 +2,8 @@ package bgu.spl.mics.application.passiveObjects;
 import bgu.spl.mics.MySerializable;
 
 import java.io.*;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -15,8 +17,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  * You can add ONLY private fields and methods to this class as you see fit.
  */
 public class MoneyRegister implements Serializable {
-	
-	/**
+
+	public List<OrderReceipt> getOrderReceipts() {
+		return new LinkedList<>(ordersInMoneyRegister);
+	}
+
+    /**
      * Retrieves the single instance of this class.
      */
 
