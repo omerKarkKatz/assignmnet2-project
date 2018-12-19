@@ -23,11 +23,11 @@ public class Customer implements Serializable {
 	private int creditCardNumber;
 	private int availableAmountInCreditCard;
 	private final transient Object moneyLock = new Object();
-	private Vector<Pair<String,Integer>> OrderSchedule;
+	private LinkedList<Pair<String,Integer>> OrderSchedule;
 
 
 
-	public Customer(int id, String name, String address, int distance, int creditCardNumber, int availableAmountInCreditCard, Vector<Pair<String,Integer>> orderSchedule){
+	public Customer(int id, String name, String address, int distance, int creditCardNumber, int availableAmountInCreditCard, LinkedList<Pair<String,Integer>> orderSchedule){
 		this.id = id;
 		this.name = name;
 		this.address = address;

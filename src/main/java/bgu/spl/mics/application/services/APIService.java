@@ -26,7 +26,7 @@ public class APIService extends MicroService {
 
 	private Customer customer;
 	private AtomicInteger currentTick = new AtomicInteger(0);
-	private ConcurrentHashMap<Integer, Vector<String>> bookToOrderInCurrTick;
+	private ConcurrentHashMap <Integer, LinkedList<String>> bookToOrderInCurrTick;
 	private CountDownLatch countDownLatch;
 	//TODO: think where are we sapoused to recive the orderRecite or null.
 
@@ -54,10 +54,10 @@ public class APIService extends MicroService {
 		countDownLatch.countDown();
 	}
 
-	private ConcurrentHashMap<Integer,Vector<String>> ConstructHashMap(Vector<Pair<String, Integer>> bookTick) {
-		ConcurrentHashMap<Integer,Vector<String>> OrderByTick = new ConcurrentHashMap<Integer, Vector<String>>();
+	private ConcurrentHashMap<Integer,LinkedList<String>> ConstructHashMap(List<Pair<String,Integer>> bookTick) {
+		ConcurrentHashMap<Integer,LinkedList<String>> OrderByTick = new ConcurrentHashMap<Integer, LinkedList<String>>();
 		for (Pair<String, Integer> pair : bookTick) {
-			OrderByTick.putIfAbsent(pair.getValue(),new Vector<String>());
+			OrderByTick.putIfAbsent(pair.getValue(),new LinkedList<String>());
 			OrderByTick.get(pair.getValue()).add(pair.getKey());
 		}
 		return OrderByTick;

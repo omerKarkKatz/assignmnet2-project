@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.nio.file.Paths;
+import java.util.LinkedList;
 import java.util.Vector;
 
 public class JasonReader {
@@ -123,7 +124,7 @@ public class JasonReader {
 
                 //initelize a vector of orderSchedule that will be one of the customers fields
                 JsonArray orderSchedulejsonArray = currCustomer.getAsJsonArray("orderSchedule");
-                Vector<Pair<String, Integer>> orderSchedule = new Vector<>();
+                LinkedList<Pair<String, Integer>> orderSchedule = new LinkedList<>();
                 for (int j = 0; j < orderSchedulejsonArray.size(); j++) {
                     JsonObject currOrder = orderSchedulejsonArray.get(j).getAsJsonObject();
                     Pair<String, Integer> title_tick = new Pair<>(currOrder.get("bookTitle").getAsString(), currOrder.get("tick").getAsInt());
