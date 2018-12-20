@@ -33,7 +33,7 @@ public class ResourceService extends MicroService{
 
 	@Override
 	protected void initialize() {
-		System.out.println("strted: " + this.getName());
+		System.out.println("started: " + this.getName());
 		subscribeEvent(AcquireVehicleEvent.class, getVehicleEv -> this.complete(getVehicleEv,resourceHolderInstance.acquireVehicle()));
 		subscribeEvent(ReleaceVehicleEvent.class, vehicleEv -> resourceHolderInstance.releaseVehicle(vehicleEv.getVehicle()));
 		subscribeBroadcast(TerminationBroadcast.class, closingStore ->{resourceHolderInstance.releaseVehicle(null);

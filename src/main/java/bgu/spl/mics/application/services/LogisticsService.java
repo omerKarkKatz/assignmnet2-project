@@ -15,6 +15,7 @@ import bgu.spl.mics.application.passiveObjects.ResourcesHolder;
 
 import java.sql.SQLOutput;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Logistic service in charge of delivering books that have been purchased to customers.
@@ -40,13 +41,14 @@ public class LogisticsService extends MicroService {
 		AcquireVehicleEvent AV = new AcquireVehicleEvent();
 		subscribeEvent(DeliveryEvent.class, deliver ->{
 			Future<Future<DeliveryVehicle>> f=sendEvent(AV);
+			System.out.println(this.getName()+" asking for vehicle <<<<<<<");
 			if(f==null || f.get()==null || f.get().get()==null){
 				complete(deliver,null);
 			}
 			else {
 				DeliveryVehicle deliveryVehicle = f.get().get();
 				deliveryVehicle.deliver(deliver.getAddress(), deliver.getDistance());
-				System.out.println("sending book");
+				System.out.println(this.getName()+" sending book <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 
 				ReleaceVehicleEvent RV = new ReleaceVehicleEvent(deliveryVehicle);
 				sendEvent(RV);
