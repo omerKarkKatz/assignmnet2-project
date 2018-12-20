@@ -63,6 +63,7 @@ public class ResourcesHolder {
      * @param vehicle	{@link DeliveryVehicle} to be released.
      */
 	public void releaseVehicle(DeliveryVehicle vehicle) {
+		synchronized (this){
 		if (vehicle == null)
 			resovleAll();
 		else {
@@ -70,6 +71,7 @@ public class ResourcesHolder {
 				deliveryVehicleFutureQueue.poll().resolve(vehicle);
 			else
 				deliveryVehicleQueue.add(vehicle);
+			}
 		}
 	}
 
