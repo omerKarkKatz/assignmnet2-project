@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class TimeService extends MicroService {
 
     private int speed;
-    private int duration;
+    private static int duration;
     private AtomicInteger passedTickes = new AtomicInteger(1);
 
     public TimeService(int speed, int duration) {
@@ -54,5 +54,7 @@ public class TimeService extends MicroService {
         timer.scheduleAtFixedRate(timerTask, 0, speed);
         terminate();
     }
-
+    public static int getduration(){
+        return duration;
+    }
 }

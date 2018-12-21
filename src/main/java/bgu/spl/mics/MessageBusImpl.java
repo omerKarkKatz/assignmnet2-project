@@ -105,18 +105,20 @@ public class MessageBusImpl implements MessageBus {
 		MicroService m = null;
 		if(eventsSubscribers.containsKey(e.getClass())) {
 			broadCastLock.readLock().lock();
+
 			synchronized (eventsSubscribers.get(e.getClass())) {
-				m = eventsSubscribers.get(e.getClass()).poll();
-				// checks if there is a micro service which can handle this.
-				if (m == null) {
-					broadCastLock.readLock().unlock();
-					return null;
+				if (eventsSubscribers.get(e.getClass()).isEmpty()) {
+					// checks if there is a micro service which can handle this.
+						broadCastLock.readLock().unlock();
+
+					System.out.println(e.getClass()+" there is no one to handle my task !!!!!!!!!!!!!!!!!!!!!!!!!");
+						return null;
 				}
 					// moves the micro to the end of the queue (round robin manner), adds message to the microMessageQueue.
 				else {
+					m = eventsSubscribers.get(e.getClass()).poll();
 					eventsSubscribers.get(e.getClass()).add(m);
 					QueueOfMicroTasks.get(m).add(e);
-
 				}
 			}
 			broadCastLock.readLock().unlock();
@@ -138,18 +140,20 @@ public class MessageBusImpl implements MessageBus {
 		// check if clear is sync.
 		broadCastLock.writeLock().lock();
 		if (QueueOfMicroTasks.get(m).size()> 0){
-			for (Message message: QueueOfMicroTasks.get(m))
+			for (Message message: QueueOfMicroTasks.get(m)) {
 				EventToFuture.get(message).resolve(null);
+				System.out.println(m.getName() + " resolving Futures");
+			}
 		}
 
 		QueueOfMicroTasks.get(m).clear();
 		QueueOfMicroTasks.remove(m);
 		if (messagesOfMicroToDelete.containsKey(m)) {
-				for (Class<? extends Message> messageIter : messagesOfMicroToDelete.get(m)) {
-					if (eventsSubscribers.containsKey(messageIter))
-						eventsSubscribers.get(messageIter).remove(m);
-					else
-						broadcastSubscribers.get(messageIter).remove(m);
+			for (Class<? extends Message> messageIter : messagesOfMicroToDelete.get(m)) {
+				if (eventsSubscribers.containsKey(messageIter))
+					eventsSubscribers.get(messageIter).remove(m);
+				else
+					broadcastSubscribers.get(messageIter).remove(m);
 				}
 		}
 		broadCastLock.writeLock().unlock();

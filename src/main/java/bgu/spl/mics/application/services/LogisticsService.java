@@ -42,7 +42,7 @@ public class LogisticsService extends MicroService {
 		subscribeEvent(DeliveryEvent.class, deliver ->{
 			Future<Future<DeliveryVehicle>> f=sendEvent(AV);
 			System.out.println(this.getName()+" asking for vehicle <<<<<<<");
-			if(f==null || f.get()==null || f.get().get()==null){
+			if(f==null || f.get(TimeService.getduration(),TimeUnit.MILLISECONDS)==null || f.get().get()==null){
 				complete(deliver,null);
 			}
 			else {
