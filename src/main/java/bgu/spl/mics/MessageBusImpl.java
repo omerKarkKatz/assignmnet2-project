@@ -98,7 +98,7 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) {
 		Future<T> futureEvent = new Future<T>();
-		EventToFuture.putIfAbsent(e, futureEvent);
+		EventToFuture.put(e, futureEvent);
 		MicroService m = null;
 		if(eventsSubscribers.containsKey(e.getClass())) {
 			broadCastLock.readLock().lock();
