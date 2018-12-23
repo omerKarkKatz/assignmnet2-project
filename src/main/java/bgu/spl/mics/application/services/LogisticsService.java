@@ -36,7 +36,6 @@ public class LogisticsService extends MicroService {
 
 	@Override
 	protected void initialize() {
-		System.out.println("strted: " + this.getName());
 		AcquireVehicleEvent AV = new AcquireVehicleEvent();
 		subscribeEvent(DeliveryEvent.class, deliver ->{
 			Future<Future<DeliveryVehicle>> f=sendEvent(AV);
@@ -46,7 +45,6 @@ public class LogisticsService extends MicroService {
 			}
 			DeliveryVehicle deliveryVehicle = f.get().get();
 			deliveryVehicle.deliver(deliver.getAddress(),deliver.getDistance());
-			System.out.println("sending book");
 
 			ReleaceVehicleEvent RV = new ReleaceVehicleEvent(deliveryVehicle);
 			sendEvent(RV);

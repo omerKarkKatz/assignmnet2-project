@@ -40,7 +40,6 @@ public class APIService extends MicroService {
 
 	@Override
 	protected void initialize() {
-		System.out.println("started: " + this.getName());
 		this.subscribeBroadcast(TickBroadcast.class, tickBrod -> {
 			currentTick.set(tickBrod.getCurrTick());
 			if (bookToOrderInCurrTick.containsKey(currentTick.get())) {

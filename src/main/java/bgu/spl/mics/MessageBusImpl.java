@@ -25,7 +25,6 @@ public class MessageBusImpl implements MessageBus {
 	private ConcurrentHashMap<Class<? extends Broadcast>, Vector<MicroService>> broadcastSubscribers;
 	private ConcurrentHashMap<Event, Future> EventToFuture;
 	private ConcurrentHashMap<MicroService, Vector<Class<? extends Message>>> messagesOfMicroToDelete;
-	private Object lockSendTask;
 	private ReentrantReadWriteLock broadCastLock;
 
 	private MessageBusImpl(){
@@ -34,7 +33,6 @@ public class MessageBusImpl implements MessageBus {
 		broadcastSubscribers = new ConcurrentHashMap<>();
 		EventToFuture = new ConcurrentHashMap<>();
 		messagesOfMicroToDelete = new ConcurrentHashMap<>();
-		lockSendTask = new Object();
 		broadCastLock = new ReentrantReadWriteLock(true);
 
 	}
@@ -150,7 +148,7 @@ public class MessageBusImpl implements MessageBus {
 				}
 		}
 		broadCastLock.writeLock().unlock();
-		System.out.println("Micro Service "+m.getName()+" unregistered");
+
 	}
 
 	@Override

@@ -33,7 +33,6 @@ public class InventoryService extends MicroService{
 
 	@Override
 	protected void initialize() {
-		System.out.println("strted: " + this.getName());
 		subscribeEvent(CheckAvilabilityEvent.class, checkAvilabilityEv -> {
 			bookTitle = checkAvilabilityEv.getBookTitle();
 			priceOrMinus1 = inventory.checkAvailabiltyAndGetPrice(bookTitle);

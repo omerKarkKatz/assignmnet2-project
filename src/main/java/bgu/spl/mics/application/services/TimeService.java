@@ -36,7 +36,6 @@ public class TimeService extends MicroService {
         @Override
         public void run() {
             if (duration >= passedTickes.get()) {
-                System.out.println(passedTickes.get());
                 sendBroadcast(new TickBroadcast(passedTickes.get()));
                 passedTickes.incrementAndGet();
             } else {
@@ -50,7 +49,6 @@ public class TimeService extends MicroService {
     };
     @Override
     protected void initialize() {
-        System.out.println("started: " + this.getName());
         timer.scheduleAtFixedRate(timerTask, 0, speed);
         terminate();
     }
